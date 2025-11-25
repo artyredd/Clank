@@ -21,10 +21,19 @@ GPIO_RIGHT = 13
 camera = Picamera2()
 camera.resolution = (640, 480)
 camera.framerate = 60
-rawCapture = camera.capture_array("main")
+camera.configure(camera.create_video_configuration(main={"format": 'XRGB8888',
+                                                           "size": (640, 480)}))
+camera.start()
 
 # allow the camera to warmup
-time.sleep(0.1)
+time.sleep(1)
+
+while True:
+    frame = camera.capture_array()
+    #cv2.circle(frame, middle, 10, (255, 0 , 255), -1)
+    cv2.imshow('f', frame)
+    cv2.waitKey(1)
+
 
 faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
