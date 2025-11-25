@@ -28,6 +28,8 @@ faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontal
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(GPIO_LEFT, GPIO.OUT)
 GPIO.setup(GPIO_RIGHT, GPIO.OUT)
+GPIO.output(GPIO_LEFT, GPIO.LOW)
+GPIO.output(GPIO_RIGHT, GPIO.LOW)
 
 t = time.time()
 deltaTime = 0
