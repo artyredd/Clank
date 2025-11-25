@@ -5,6 +5,7 @@ import cv2
 import time
 
 import picamera2
+from picamera2.array import PiRGBArray
 from picamera2 import Picamera2
 
 import RPi.GPIO as GPIO
