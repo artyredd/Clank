@@ -59,7 +59,7 @@ while True:
 
     )
 
-    time.sleep(1000)
+    time.sleep(3)
 
     test = not test
 
