@@ -9,8 +9,8 @@ from picamera2 import Picamera2
 
 import RPi.GPIO as GPIO
 
-GPIO_LEFT = 12
-GPIO_RIGHT = 13
+GPIO_LEFT = 16
+GPIO_RIGHT = 26
 
 camera = Picamera2()
 camera.resolution = (640, 480)
@@ -28,6 +28,7 @@ faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontal
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(GPIO_LEFT, GPIO.OUT)
 GPIO.setup(GPIO_RIGHT, GPIO.OUT)
+
 GPIO.output(GPIO_LEFT, GPIO.LOW)
 GPIO.output(GPIO_RIGHT, GPIO.LOW)
 
@@ -65,7 +66,7 @@ while True:
 
         if x > 240:
             print("Left")
-            GPIO.output(GPIO_LEFT,GPIO.HIGH)
+            GPIO.output(GPIO_LEFT, GPIO.HIGH)
             GPIO.output(GPIO_RIGHT, GPIO.LOW)
 
         elif x < 220:
