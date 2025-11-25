@@ -35,6 +35,7 @@ GPIO.output(GPIO_RIGHT, GPIO.LOW)
 t = time.time()
 deltaTime = 0
 averageTime = 0
+test = False
 while True:
     newTime = time.time()
     deltaTime = newTime - t
@@ -57,6 +58,16 @@ while True:
         minSize=(20, 20)
 
     )
+
+    test = not test
+
+    if test:
+        GPIO.output(GPIO_LEFT, GPIO.HIGH)
+        GPIO.output(GPIO_RIGHT, GPIO.LOW)
+    else:
+        GPIO.output(GPIO_LEFT, GPIO.LOW)
+        GPIO.output(GPIO_RIGHT, GPIO.HIGH)
+    continue;
 
     for (x, y, w, h) in faces:
 
