@@ -16,7 +16,7 @@ camera = Picamera2()
 camera.resolution = (640, 480)
 camera.framerate = 60
 config = camera.create_video_configuration(main={"format": 'XRGB8888',
-                                                           "size": (640, 480)}, controls={"FrameDurationLimits": (0, 16666)}))
+                                                           "size": (640, 480)}, controls={"FrameDurationLimits": (0, 16666)})
 camera.configure(config)
 camera.start()
 
