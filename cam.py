@@ -21,6 +21,8 @@ faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontal
 
 cap = cv2.VideoCapture(0)
 
+assert(cap.isOpened())
+
 cap.set(3, 640)  # Set Width
 
 cap.set(4, 480)  # Set Height
