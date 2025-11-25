@@ -17,7 +17,7 @@ GPIO_RIGHT = 13
 
 #pwm.setPWMFreq(50)
 
-camera = PiCamera()
+camera = Picamera2()
 camera.resolution = (640, 480)
 camera.framerate = 60
 rawCapture = PiRGBArray(camera, size=(640, 480))
