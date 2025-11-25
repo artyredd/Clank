@@ -17,6 +17,14 @@ GPIO_RIGHT = 13
 
 #pwm.setPWMFreq(50)
 
+camera = PiCamera2()
+camera.resolution = (640, 480)
+camera.framerate = 60
+rawCapture = PiRGBArray(camera, size=(640, 480))
+
+# allow the camera to warmup
+time.sleep(0.1)
+
 faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
 cap = cv2.VideoCapture(0)
@@ -38,6 +46,20 @@ GPIO.setup(GPIO_RIGHT, GPIO.OUT)
 #pwm.setRotationAngle(1, 180)  # PAN
 
 #pwm.setRotationAngle(0, current_TILT)  # TILT
+
+# capture frames from the camera
+for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+	# grab the raw NumPy array representing the image, then initialize the timestamp
+	# and occupied/unoccupied text
+	image = frame.array
+	# show the frame
+	cv2.imshow("Frame", image)
+	key = cv2.waitKey(1) & 0xFF
+	# clear the stream in preparation for the next frame
+	rawCapture.truncate(0)
+	# if the `q` key was pressed, break from the loop
+	if key == ord("q"):
+		break
 
 while True:
 
