@@ -15,8 +15,9 @@ GPIO_RIGHT = 13
 camera = Picamera2()
 camera.resolution = (640, 480)
 camera.framerate = 60
-camera.configure(camera.create_video_configuration(main={"format": 'XRGB8888',
-                                                           "size": (640, 480)}))
+config = camera.create_video_configuration(main={"format": 'XRGB8888',
+                                                           "size": (640, 480)}, controls={"FrameDurationLimits": (0, 16666)}))
+camera.configure(config)
 camera.start()
 
 # allow the camera to warmup
@@ -60,9 +61,9 @@ while True:
 
     for (x, y, w, h) in faces:
 
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        #cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
-        print("Face:" + str(x) + "," + str(y) + "\n")
+        #print("Face:" + str(x) + "," + str(y) + "\n")
 
         if x > 240:
             print("Left")
@@ -75,18 +76,3 @@ while True:
             GPIO.output(GPIO_RIGHT,GPIO.HIGH)
             GPIO.output(GPIO_LEFT,GPIO.LOW)
             current_PAN += 2
-
-        if y > 140:
-            current_TILT += 2
-
-        elif y < 60:
-            current_TILT -= 2
-
-   # cv2.imshow('f', frame)
-
-    if cv2.waitKey(30) & 0xFF == 27:  # Press ‘ESC’ to exit
-        break
-
-cap.release()
-
-cv2.destroyAllWindows()
