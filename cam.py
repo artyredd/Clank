@@ -43,7 +43,7 @@ while True:
 
     ret, img = cap.read()
 
-    assert(!img.empty())
+    assert(img.empty() == False)
 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
