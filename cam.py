@@ -12,12 +12,6 @@ import RPi.GPIO as GPIO
 GPIO_LEFT = 12
 GPIO_RIGHT = 13
 
-# from PCA9685 import PCA9685
-
-#pwm = PCA9685()
-
-#pwm.setPWMFreq(50)
-
 camera = Picamera2()
 camera.resolution = (640, 480)
 camera.framerate = 60
@@ -28,22 +22,7 @@ camera.start()
 # allow the camera to warmup
 time.sleep(1)
 
-while True:
-    frame = camera.capture_array()
-    #cv2.circle(frame, middle, 10, (255, 0 , 255), -1)
-    cv2.imshow('f', frame)
-    cv2.waitKey(1)
-
-
 faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-
-cap = cv2.VideoCapture(0)
-
-assert(cap.isOpened())
-
-cap.set(3, 640)  # Set Width
-
-cap.set(4, 480)  # Set Height
 
 current_PAN = 90
 
@@ -53,33 +32,10 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(GPIO_LEFT, GPIO.OUT)
 GPIO.setup(GPIO_RIGHT, GPIO.OUT)
 
-#pwm.setRotationAngle(1, 180)  # PAN
-
-#pwm.setRotationAngle(0, current_TILT)  # TILT
-
-# capture frames from the camera
-for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-	# grab the raw NumPy array representing the image, then initialize the timestamp
-	# and occupied/unoccupied text
-	image = frame.array
-	# show the frame
-	cv2.imshow("Frame", image)
-	key = cv2.waitKey(1) & 0xFF
-	# clear the stream in preparation for the next frame
-	rawCapture.truncate(0)
-	# if the `q` key was pressed, break from the loop
-	if key == ord("q"):
-		break
-
 while True:
+    frame = camera.capture_array()
 
-    ret, img = cap.read()
-
-    if not ret:
-        print(".")
-        continue
-
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     faces = faceCascade.detectMultiScale(
 
@@ -122,10 +78,9 @@ while True:
 
             current_TILT -= 2
 
-    cv2.imshow("Face Tracking", img)
-
+    cv2.imshow('f', frame)
+    
     if cv2.waitKey(30) & 0xFF == 27:  # Press ‘ESC’ to exit
-
         break
 
 cap.release()
