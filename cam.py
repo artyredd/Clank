@@ -43,7 +43,7 @@ while True:
 
     ret, img = cap.read()
 
-    if img.empty():
+    if ret:
         print(".")
         continue
 
