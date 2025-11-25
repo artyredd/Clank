@@ -43,6 +43,8 @@ while True:
 
     ret, img = cap.read()
 
+    assert(!img.empty())
+
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     faces = faceCascade.detectMultiScale(
