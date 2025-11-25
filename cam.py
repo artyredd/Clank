@@ -59,6 +59,8 @@ while True:
 
     )
 
+    time.sleep(1000)
+
     test = not test
 
     if test:
