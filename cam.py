@@ -25,10 +25,6 @@ time.sleep(1)
 
 faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
-current_PAN = 90
-
-current_TILT = 20
-
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(GPIO_LEFT, GPIO.OUT)
 GPIO.setup(GPIO_RIGHT, GPIO.OUT)
@@ -69,10 +65,8 @@ while True:
             print("Left")
             GPIO.output(GPIO_LEFT,GPIO.HIGH)
             GPIO.output(GPIO_RIGHT, GPIO.LOW)
-            current_PAN -= 2
 
         elif x < 220:
             print("Right")
             GPIO.output(GPIO_RIGHT,GPIO.HIGH)
             GPIO.output(GPIO_LEFT,GPIO.LOW)
-            current_PAN += 2
