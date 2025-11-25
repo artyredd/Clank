@@ -51,31 +51,26 @@ while True:
 
     for (x, y, w, h) in faces:
 
-        cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+        print("Face:" + str(x) + "," + str(y) + "\n")
 
         if x > 240:
-
-            #pwm.setRotationAngle(1, current_PAN)  # PAN
+            print("Left")
             GPIO.output(GPIO_LEFT,GPIO.HIGH)
             GPIO.output(GPIO_RIGHT, GPIO.LOW)
             current_PAN -= 2
 
         elif x < 220:
-            #pwm.setRotationAngle(1, current_PAN)  # PAN
+            print("Right")
             GPIO.output(GPIO_RIGHT,GPIO.HIGH)
             GPIO.output(GPIO_LEFT,GPIO.LOW)
             current_PAN += 2
 
         if y > 140:
-
-            #pwm.setRotationAngle(0, current_TILT)  # TILT
-
             current_TILT += 2
 
         elif y < 60:
-
-            #pwm.setRotationAngle(0, current_TILT)  # TILT
-
             current_TILT -= 2
 
     cv2.imshow('f', frame)
