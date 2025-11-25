@@ -14,7 +14,7 @@ GPIO_RIGHT = 13
 
 camera = Picamera2()
 camera.resolution = (640, 480)
-camera.framerate = 10
+camera.framerate = 60
 camera.configure(camera.create_video_configuration(main={"format": 'XRGB8888',
                                                            "size": (640, 480)}))
 camera.start()
@@ -32,7 +32,16 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(GPIO_LEFT, GPIO.OUT)
 GPIO.setup(GPIO_RIGHT, GPIO.OUT)
 
+t = time.time()
+deltaTime = 0
+averageTime = 0
 while True:
+    newTime = time.time()
+    deltaTime = newTime - t
+    averageTime = (averageTime + deltaTime)/2
+    t = newTime
+    print("FPS=" + str(1/deltaTime) + " AVG=" + str(1/averageTime))
+
     frame = camera.capture_array()
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -73,8 +82,8 @@ while True:
         elif y < 60:
             current_TILT -= 2
 
-    cv2.imshow('f', frame)
-    
+   # cv2.imshow('f', frame)
+
     if cv2.waitKey(30) & 0xFF == 27:  # Press ‘ESC’ to exit
         break
 
