@@ -14,7 +14,7 @@ GPIO_RIGHT = 13
 
 camera = Picamera2()
 camera.resolution = (640, 480)
-camera.framerate = 60
+camera.framerate = 10
 camera.configure(camera.create_video_configuration(main={"format": 'XRGB8888',
                                                            "size": (640, 480)}))
 camera.start()
