@@ -5,7 +5,6 @@ import cv2
 import time
 
 import picamera2
-from picamera2.array import PiRGBArray
 from picamera2 import Picamera2
 
 import RPi.GPIO as GPIO
@@ -22,7 +21,7 @@ GPIO_RIGHT = 13
 camera = Picamera2()
 camera.resolution = (640, 480)
 camera.framerate = 60
-rawCapture = PiRGBArray(camera, size=(640, 480))
+rawCapture = camera.capture_array("main")
 
 # allow the camera to warmup
 time.sleep(0.1)
