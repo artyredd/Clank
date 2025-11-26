@@ -88,11 +88,11 @@ thread.start()
 faces = []
 faceDataAvailable = False
 
-def MLWorker(gray = []):
+def MLWorker(*gray):
     global faceDataAvailable
     global faces
     faces = faceCascade.detectMultiScale(
-        gray,
+        gray[0],
         scaleFactor=1.2,
         minNeighbors=5,
         minSize=(20, 20)
@@ -137,4 +137,4 @@ while True:
         mainReadingBackupFrameBuffer = False
         backupFrameBufferHasData = False
 
-    Thread(target=MLWorker, args=((gray))).run()
+    Thread(target=MLWorker, args=(gray,)).run()
