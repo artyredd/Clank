@@ -48,6 +48,7 @@ workerWritingBackupFrameBuffer = False
 
 def BackgroundWork():
     # Read the next frame from the stream in a different thread
+    print("Starting Worker Thread")
     while True:
         if mainReadingFrameBuffer:
             workerWritingBackupFrameBuffer = True
@@ -56,16 +57,17 @@ def BackgroundWork():
             backupFrameBufferHasData = True
         else:
             workerWritingFrameBuffer = True
-            frameBufferHasData = camera.capture_array()
+            frameBuffer = camera.capture_array()
             workerWritingFrameBuffer = False
             frameBufferHasData = True
-
+            
         time.sleep(.001)
 
 thread = Thread(target=BackgroundWork, args=())
 thread.daemon = True
 thread.start()
 
+print("Starting Main Thread")
 while True:
     if frameBufferHasData == False and backupFrameBufferHasData == False:
         time.sleep(0.001)
