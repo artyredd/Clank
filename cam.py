@@ -15,7 +15,7 @@ GPIO_RIGHT = 26
 
 camera = Picamera2()
 camera.resolution = (640, 480)
-camera.framerate = 60
+camera.framerate = 30
 config = camera.create_video_configuration(main={"format": 'XRGB8888',
                                                            "size": (640, 480)}, controls={"FrameDurationLimits": (0, 16666)})
 camera.configure(config)
@@ -110,7 +110,7 @@ while True:
         backupFrameBufferHasData = False
 
     faces = []
-    
+
     for (x, y, w, h) in faces:
 
         cv2.rectangle(gray, (x, y), (x + w, y + h), (255, 0, 0), 2)
