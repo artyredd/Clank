@@ -37,6 +37,15 @@ t = time.time()
 deltaTime = 0
 averageTime = 0
 
+global frameBuffer
+global frameBufferHasData
+global backupFrameBuffer
+global backupFrameBufferHasData
+global mainReadingFrameBuffer
+global mainReadingBackupFrameBuffer
+global workerWritingFrameBuffer
+global workerWritingBackupFrameBuffer
+
 frameBuffer = []
 frameBufferHasData = False
 backupFrameBuffer = []
@@ -50,7 +59,7 @@ def BackgroundWork():
     # Read the next frame from the stream in a different thread
     print("Starting Worker Thread")
     while True:
-        if mainReadingFrameBuffer:
+        if mainReadingFrameBuffer or frameBufferHasData:
             workerWritingBackupFrameBuffer = True
             backupFrameBuffer = camera.capture_array()
             workerWritingBackupFrameBuffer = False
