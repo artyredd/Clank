@@ -119,10 +119,13 @@ while True:
                 print("Left")
                 GPIO.output(GPIO_LEFT, GPIO.HIGH)
                 GPIO.output(GPIO_RIGHT, GPIO.LOW)
-
             elif x < 220:
                 print("Right")
                 GPIO.output(GPIO_RIGHT,GPIO.HIGH)
+                GPIO.output(GPIO_LEFT,GPIO.LOW)
+            else:
+                print("Center Or No face")
+                GPIO.output(GPIO_RIGHT,GPIO.LOW)
                 GPIO.output(GPIO_LEFT,GPIO.LOW)
 
     if frameBufferHasData == False and backupFrameBufferHasData == False:
