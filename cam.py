@@ -74,3 +74,6 @@ while True:
             print("Right")
             GPIO.output(GPIO_RIGHT,GPIO.HIGH)
             GPIO.output(GPIO_LEFT,GPIO.LOW)
+        else:
+            GPIO.output(GPIO_RIGHT,GPIO.LOW)
+            GPIO.output(GPIO_LEFT,GPIO.LOW)
