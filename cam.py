@@ -137,4 +137,4 @@ while True:
         mainReadingBackupFrameBuffer = False
         backupFrameBufferHasData = False
 
-    Thread(target=MLWorker, args=(gray)).run()
+    Thread(target=MLWorker, args=((gray))).run()
