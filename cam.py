@@ -64,7 +64,7 @@ def BackgroundWork():
     global mainReadingBackupFrameBuffer
     global workerWritingFrameBuffer
     global workerWritingBackupFrameBuffer
-    
+
     # Read the next frame from the stream in a different thread
     print("Starting Worker Thread")
     while True:
@@ -109,18 +109,8 @@ while True:
         mainReadingBackupFrameBuffer = False
         backupFrameBufferHasData = False
 
-    faces = faceCascade.detectMultiScale(
-
-        gray,
-
-        scaleFactor=1.2,
-
-        minNeighbors=5,
-
-        minSize=(20, 20)
-
-    )
-
+    faces = []
+    
     for (x, y, w, h) in faces:
 
         cv2.rectangle(gray, (x, y), (x + w, y + h), (255, 0, 0), 2)
