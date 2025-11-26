@@ -101,8 +101,6 @@ def MLWorker(*gray):
 
 print("Starting Main Thread")
 while True:
-    cv2.imshow('frame', frameBuffer)
-    
     if faceDataAvailable == True:
         newTime = time.time()
         deltaTime = newTime - t
@@ -128,7 +126,6 @@ while True:
                 GPIO.output(GPIO_LEFT,GPIO.LOW)
 
     if frameBufferHasData == False and backupFrameBufferHasData == False:
-        time.sleep(0.001)
         continue
 
     gray = []
@@ -142,5 +139,7 @@ while True:
         gray = cv2.cvtColor(backupFrameBuffer, cv2.COLOR_BGR2GRAY)
         mainReadingBackupFrameBuffer = False
         backupFrameBufferHasData = False
+    
+    cv2.imshow('frame', frameBuffer)
 
     Thread(target=MLWorker, args=(gray,)).start()
