@@ -108,9 +108,14 @@ while True:
         t = newTime
         print("FPS=" + str(1/deltaTime) + " AVG=" + str(1/averageTime))
 
+        faceDataAvailable = False
         for (x, y, w, h) in faces:
-            cv2.rectangle(gray, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            mainReadingFrameBuffer = True
+            cv2.rectangle(frameBuffer, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            cv2.imshow('frame', frameBuffer)
+            mainReadingFrameBuffer = False
 
+            
             if x > 240:
                 print("Left")
                 GPIO.output(GPIO_LEFT, GPIO.HIGH)
