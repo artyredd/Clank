@@ -8,7 +8,6 @@ import picamera2
 from picamera2 import Picamera2
 
 import RPi.GPIO as GPIO
-from threading import Thread
 
 GPIO_LEFT = 16
 GPIO_RIGHT = 26
@@ -36,110 +35,42 @@ GPIO.output(GPIO_RIGHT, GPIO.LOW)
 t = time.time()
 deltaTime = 0
 averageTime = 0
-
-global frameBuffer
-global frameBufferHasData
-global backupFrameBuffer
-global backupFrameBufferHasData
-global mainReadingFrameBuffer
-global mainReadingBackupFrameBuffer
-global workerWritingFrameBuffer
-global workerWritingBackupFrameBuffer
-
-frameBuffer = []
-frameBufferHasData = False
-backupFrameBuffer = []
-backupFrameBufferHasData = False
-mainReadingFrameBuffer = False
-mainReadingBackupFrameBuffer = False
-workerWritingFrameBuffer = False
-workerWritingBackupFrameBuffer = False
-
-def BackgroundWork():
-    global frameBuffer
-    global frameBufferHasData
-    global backupFrameBuffer
-    global backupFrameBufferHasData
-    global mainReadingFrameBuffer
-    global mainReadingBackupFrameBuffer
-    global workerWritingFrameBuffer
-    global workerWritingBackupFrameBuffer
-    
-    # Read the next frame from the stream in a different thread
-    print("Starting Worker Thread")
-    while True:
-        if mainReadingFrameBuffer or frameBufferHasData:
-            workerWritingBackupFrameBuffer = True
-            backupFrameBuffer = camera.capture_array()
-            workerWritingBackupFrameBuffer = False
-            backupFrameBufferHasData = True
-        else:
-            workerWritingFrameBuffer = True
-            frameBuffer = camera.capture_array()
-            workerWritingFrameBuffer = False
-            frameBufferHasData = True
-            
-        time.sleep(.001)
-
-thread = Thread(target=BackgroundWork, args=())
-thread.daemon = True
-thread.start()
-
-faces = []
-faceDataAvailable = False
-
-def MLWorker(*gray):
-    global faceDataAvailable
-    global faces
-    faces = faceCascade.detectMultiScale(
-        gray[0],
-        scaleFactor=1.2,
-        minNeighbors=5,
-        minSize=(20, 20)
-    )
-    faceDataAvailable = True
-
-print("Starting Main Thread")
 while True:
-    if faceDataAvailable == True:
-        newTime = time.time()
-        deltaTime = newTime - t
-        averageTime = (averageTime + deltaTime)/2
-        t = newTime
-        print("FPS=" + str(1/deltaTime) + " AVG=" + str(1/averageTime))
+    newTime = time.time()
+    deltaTime = newTime - t
+    averageTime = (averageTime + deltaTime)/2
+    t = newTime
+    print("FPS=" + str(1/deltaTime) + " AVG=" + str(1/averageTime))
 
-        faceDataAvailable = False
-        for (x, y, w, h) in faces:
-            mainReadingFrameBuffer = True
-            cv2.rectangle(frameBuffer, (x, y), (x + w, y + h), (255, 0, 0), 2)
-            cv2.imshow('frame', frameBuffer)
-            mainReadingFrameBuffer = False
+    frame = camera.capture_array()
 
-            
-            if x > 240:
-                print("Left")
-                GPIO.output(GPIO_LEFT, GPIO.HIGH)
-                GPIO.output(GPIO_RIGHT, GPIO.LOW)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-            elif x < 220:
-                print("Right")
-                GPIO.output(GPIO_RIGHT,GPIO.HIGH)
-                GPIO.output(GPIO_LEFT,GPIO.LOW)
+    faces = faceCascade.detectMultiScale(
 
-    if frameBufferHasData == False and backupFrameBufferHasData == False:
-        time.sleep(0.001)
-        continue
+        gray,
 
-    gray = []
-    if frameBufferHasData and workerWritingFrameBuffer == False:
-        mainReadingFrameBuffer = True
-        gray = cv2.cvtColor(frameBuffer, cv2.COLOR_BGR2GRAY)
-        mainReadingFrameBuffer = False
-        frameBufferHasData = False
-    elif backupFrameBufferHasData and workerWritingBackupFrameBuffer == False:
-        mainReadingBackupFrameBuffer = True
-        gray = cv2.cvtColor(backupFrameBuffer, cv2.COLOR_BGR2GRAY)
-        mainReadingBackupFrameBuffer = False
-        backupFrameBufferHasData = False
+        scaleFactor=1.2,
 
-    Thread(target=MLWorker, args=(gray,)).run()
+        minNeighbors=5,
+
+        minSize=(20, 20)
+
+    )
+
+    for (x, y, w, h) in faces:
+
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        cv2.imshow('Framebuffer', frame)
+
+        #print("Face:" + str(x) + "," + str(y) + "\n")
+
+        if x > 240:
+            print("Left")
+            GPIO.output(GPIO_LEFT, GPIO.HIGH)
+            GPIO.output(GPIO_RIGHT, GPIO.LOW)
+
+        elif x < 220:
+            print("Right")
+            GPIO.output(GPIO_RIGHT,GPIO.HIGH)
+            GPIO.output(GPIO_LEFT,GPIO.LOW)
