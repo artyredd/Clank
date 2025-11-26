@@ -140,6 +140,4 @@ while True:
         mainReadingBackupFrameBuffer = False
         backupFrameBufferHasData = False
     
-    cv2.imshow('frame', frameBuffer)
-
-    Thread(target=MLWorker, args=(gray,)).start()
+    Thread(target=MLWorker, args=(gray,)).run()
