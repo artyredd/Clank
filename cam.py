@@ -8,6 +8,7 @@ import picamera2
 from picamera2 import Picamera2
 
 import RPi.GPIO as GPIO
+from threading import Thread
 
 GPIO_LEFT = 16
 GPIO_RIGHT = 26
@@ -35,17 +36,58 @@ GPIO.output(GPIO_RIGHT, GPIO.LOW)
 t = time.time()
 deltaTime = 0
 averageTime = 0
-test = False
+
+frameBuffer = []
+frameBufferHasData = False
+backupFrameBuffer = []
+backupFrameBufferHasData = False
+mainReadingFrameBuffer = False
+mainReadingBackupFrameBuffer = False
+workerWritingFrameBuffer = False
+workerWritingBackupFrameBuffer = False
+
+def BackgroundWork():
+    # Read the next frame from the stream in a different thread
+    while True:
+        if mainReadingFrameBuffer:
+            workerWritingBackupFrameBuffer = True
+            backupFrameBuffer = camera.capture_array()
+            workerWritingBackupFrameBuffer = False
+            backupFrameBufferHasData = True
+        else:
+            workerWritingFrameBuffer = True
+            frameBufferHasData = camera.capture_array()
+            workerWritingFrameBuffer = False
+            frameBufferHasData = True
+
+        time.sleep(.001)
+
+thread = Thread(target=BackgroundWork, args=())
+thread.daemon = True
+thread.start()
+
 while True:
+    if frameBufferHasData == False and backupFrameBufferHasData == False:
+        time.sleep(0.001)
+        continue
+
     newTime = time.time()
     deltaTime = newTime - t
     averageTime = (averageTime + deltaTime)/2
     t = newTime
     print("FPS=" + str(1/deltaTime) + " AVG=" + str(1/averageTime))
 
-    frame = camera.capture_array()
-
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    gray = []
+    if frameBufferHasData and workerWritingFrameBuffer == False:
+        mainReadingFrameBuffer = True
+        gray = cv2.cvtColor(frameBuffer, cv2.COLOR_BGR2GRAY)
+        mainReadingFrameBuffer = False
+        frameBufferHasData = False
+    elif backupFrameBufferHasData and workerWritingBackupFrameBuffer == False:
+        mainReadingBackupFrameBuffer = True
+        gray = cv2.cvtColor(backupFrameBuffer, cv2.COLOR_BGR2GRAY)
+        mainReadingBackupFrameBuffer = False
+        backupFrameBufferHasData = False
 
     faces = faceCascade.detectMultiScale(
 
@@ -59,21 +101,9 @@ while True:
 
     )
 
-    time.sleep(3)
-
-    test = not test
-
-    if test:
-        GPIO.output(GPIO_LEFT, GPIO.HIGH)
-        GPIO.output(GPIO_RIGHT, GPIO.LOW)
-    else:
-        GPIO.output(GPIO_LEFT, GPIO.LOW)
-        GPIO.output(GPIO_RIGHT, GPIO.HIGH)
-    continue;
-
     for (x, y, w, h) in faces:
 
-        #cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        cv2.rectangle(gray, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
         #print("Face:" + str(x) + "," + str(y) + "\n")
 
