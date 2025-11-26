@@ -88,7 +88,7 @@ thread.start()
 faces = []
 faceDataAvailable = False
 
-def MLWorker(gray):
+def MLWorker(gray = []):
     global faceDataAvailable
     global faces
     faces = faceCascade.detectMultiScale(
