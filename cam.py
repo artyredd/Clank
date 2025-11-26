@@ -56,6 +56,15 @@ workerWritingFrameBuffer = False
 workerWritingBackupFrameBuffer = False
 
 def BackgroundWork():
+    global frameBuffer
+    global frameBufferHasData
+    global backupFrameBuffer
+    global backupFrameBufferHasData
+    global mainReadingFrameBuffer
+    global mainReadingBackupFrameBuffer
+    global workerWritingFrameBuffer
+    global workerWritingBackupFrameBuffer
+    
     # Read the next frame from the stream in a different thread
     print("Starting Worker Thread")
     while True:
