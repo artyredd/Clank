@@ -65,6 +65,7 @@ def BackgroundWork():
             backupFrameBufferHasData = True
 
 
+grayScaleBufferHasData = False
 grayscaleFramebuffer = []
 grayscaleFrameLock = Lock()
 faces = []
@@ -79,7 +80,7 @@ def MLWorker():
     
     print("Started ML Worker Thread")
     while True:
-        if faceDataAvailable == False:
+        if faceDataAvailable == False and grayScaleBufferHasData:
             if facesLock.acquire():
                 if grayscaleFrameLock.acquire():
                     faces = faceCascade.detectMultiScale(
@@ -136,7 +137,9 @@ while True:
         grayscaleFramebuffer = cv2.cvtColor(frameBuffer, cv2.COLOR_BGR2GRAY)
         frameBufferLock.release()
         frameBufferHasData = False
+        grayScaleBufferHasData = True
     elif backupFrameBufferHasData and backupFrameBufferLock.acquire(False):
         grayscaleFramebuffer = cv2.cvtColor(backupFrameBuffer, cv2.COLOR_BGR2GRAY)
         backupFrameBufferLock.release()
         backupFrameBufferHasData = False
+        grayScaleBufferHasData = True
