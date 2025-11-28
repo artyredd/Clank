@@ -80,14 +80,16 @@ def MLWorker():
     print("Started ML Worker Thread")
     while True:
         if faceDataAvailable == False:
-            with facesLock.acquire():
-                with grayscaleFrameLock.acquire():
+            if facesLock.acquire():
+                if grayscaleFrameLock.acquire():
                     faces = faceCascade.detectMultiScale(
                         grayscaleFramebuffer,
                         scaleFactor=1.2,
                         minNeighbors=5,
                         minSize=(20, 20)
                     )
+                    facesLock.release()
+                    grayscaleFrameLock.release()
                     faceDataAvailable = True
 
 
@@ -102,7 +104,7 @@ thread.start()
 print("Starting Main Thread")
 while True:
     if faceDataAvailable == True:
-        with facesLock.acquire():
+        if facesLock.acquire():
             newTime = time.time()
             deltaTime = newTime - t
             averageTime = (averageTime + deltaTime)/2
@@ -127,6 +129,7 @@ while True:
                     GPIO.output(GPIO_RIGHT,GPIO.LOW)
                     GPIO.output(GPIO_LEFT,GPIO.LOW)
 
+            facesLock.release();
             faceDataAvailable = False
 
     if frameBufferHasData and frameBufferLock.acquire(False):
