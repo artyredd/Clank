@@ -57,10 +57,12 @@ def BackgroundWork():
     while True:
         if frameBufferLock.acquire(False):
             frameBuffer = camera.capture_array()
+            print(".")
             frameBufferLock.release()
             frameBufferHasData = True
         elif backupFrameBufferLock.acquire(False):
             backupFrameBuffer = camera.capture_array()
+            print(",")
             backupFrameBufferLock.release()
             backupFrameBufferHasData = True
 
