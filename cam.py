@@ -55,16 +55,14 @@ def BackgroundWork():
     # Read the next frame from the stream in a different thread
     print("Starting Camera Worker Thread")
     while True:
-        if frameBufferLock.acquire(False):
-            frameBuffer = camera.capture_array()
-            print(".")
-            frameBufferLock.release()
-            frameBufferHasData = True
-        elif backupFrameBufferLock.acquire(False):
+        if frameBufferHasData and backupFrameBufferLock.acquire(False) :
             backupFrameBuffer = camera.capture_array()
-            print(",")
             backupFrameBufferLock.release()
             backupFrameBufferHasData = True
+        elif frameBufferLock.acquire(False):
+            frameBuffer = camera.capture_array()
+            frameBufferLock.release()
+            frameBufferHasData = True
 
 
 grayScaleBufferHasData = False
