@@ -114,8 +114,9 @@ while True:
 
             for (x, y, w, h) in faces:
                 
-                with grayscaleFrameLock.acquire(False):
+                if grayscaleFrameLock.acquire(False):
                     cv2.rectangle(grayscaleFramebuffer, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                    grayscaleFrameLock.release()
                 
                 if x > 240:
                     print("Left")
@@ -130,7 +131,7 @@ while True:
                     GPIO.output(GPIO_RIGHT,GPIO.LOW)
                     GPIO.output(GPIO_LEFT,GPIO.LOW)
 
-            facesLock.release();
+            facesLock.release()
             faceDataAvailable = False
 
     if frameBufferHasData and frameBufferLock.acquire(False):
