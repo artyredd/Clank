@@ -160,7 +160,7 @@ def app_callback(pad, info, user_data):
         frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
         user_data.set_frame(frame)
 
-    print(string_to_print)
+    #print(string_to_print)
     return Gst.PadProbeReturn.OK
 
 # This function can be used to get the COCO keypoints coorespondence map
