@@ -13,16 +13,17 @@ from hailo_apps.hailo_app_python.apps.pose_estimation.pose_estimation_pipeline i
 
 import RPi.GPIO as GPIO
 from threading import Thread, Lock, Condition
+import time
 
 PIN_LEFT = 16
 PIN_RIGHT = 23
 DETECTION_MARGIN = 100
-
-def user_Main():
-    print("Starting GPIO thread\n")
-    while(True):
-          x = 1
-          
+PREVIOUS_ID = -1
+CURRENT_ID = -1
+TIME_AT_LAST_ID_CHANGE = -30
+MAX_TIME_PER_ID = 15
+ID_IN_LIST = False
+    
 # -----------------------------------------------------------------------------------------------
 # User-defined class to be used in the callback function
 # -----------------------------------------------------------------------------------------------
@@ -47,10 +48,20 @@ def turn_right():
 
 # This is the callback function that will be called when data is available from the pipeline
 def app_callback(pad, info, user_data):
+    
+    global PREVIOUS_ID
+    global CURRENT_ID
+    global TIME_AT_LAST_ID_CHANGE
+    global MAX_TIME_PER_ID
+    global ID_IN_LIST
+
     # Get the GstBuffer from the probe info
     buffer = info.get_buffer()
     # Check if the buffer is valid
     if buffer is None:
+        CURRENT_ID = -1
+        ID_IN_LIST = False
+        print("Tracking lost\n")
         stop_motor()
         return Gst.PadProbeReturn.OK
 
@@ -74,9 +85,10 @@ def app_callback(pad, info, user_data):
     # Get the keypoints
     keypoints = get_keypoints()
 
-    if len(detections) is 0:
+    if len(detections) == 0:
         stop_motor()
 
+    idFound = False
     # Parse the detections
     for detection in detections:
         label = detection.get_label()
@@ -85,17 +97,37 @@ def app_callback(pad, info, user_data):
         
         supportedTypes = ["person", "teddy bear", "animal", "dog"]
         
+        timeSinceLastIdChange = time.time() - TIME_AT_LAST_ID_CHANGE
+
         if label in supportedTypes:
             # Get track ID
             track_id = 0
             track = detection.get_objects_typed(hailo.HAILO_UNIQUE_ID)
             if len(track) == 1:
                 track_id = track[0].get_id()
+                # initialize if we haven't had a value yet
+                if CURRENT_ID == -1 or ID_IN_LIST == False:
+                    string_to_print += (f"Defaulting tracking to first object found\n")
+                    CURRENT_ID = track_id
+                    TIME_AT_LAST_ID_CHANGE = time.time()
+                # check to see if the tracked object is still in the array
+                if track_id == CURRENT_ID:
+                    idFound = True
+                # check to see if we should look at someone else
+                if track_id != CURRENT_ID and timeSinceLastIdChange >= MAX_TIME_PER_ID:
+                    string_to_print += (f"Looked too long at {CURRENT_ID} looking at {track_id} instead\n")
+                    CURRENT_ID = track_id
+                    TIME_AT_LAST_ID_CHANGE = time.time()
+                    
+
             string_to_print += (f"Detection: ID: {track_id} Label: {label} Confidence: {confidence:.2f}\n")
 
             # Pose estimation landmarks from detection (if available)
             landmarks = detection.get_objects_typed(hailo.HAILO_LANDMARKS)
-            if len(landmarks) != 0:
+
+            # only do stuff if the person we're supposed to be tracking
+            # is the same person we were looking at last time
+            if len(landmarks) != 0 and CURRENT_ID == track_id:
                 points = landmarks[0].get_points()
                 leftShoulderIndex = keypoints["left_shoulder"]
                 rightShoulderIndex = keypoints["right_shoulder"]
@@ -121,6 +153,7 @@ def app_callback(pad, info, user_data):
                     stop_motor()
                     string_to_print += "Center\n"
                     
+    ID_IN_LIST = idFound
 
     if user_data.use_frame:
         # Convert the frame to BGR
