@@ -11,6 +11,18 @@ from hailo_apps.hailo_app_python.core.common.buffer_utils import get_caps_from_p
 from hailo_apps.hailo_app_python.core.gstreamer.gstreamer_app import app_callback_class
 from hailo_apps.hailo_app_python.apps.pose_estimation.pose_estimation_pipeline import GStreamerPoseEstimationApp
 
+import RPi.GPIO as GPIO
+from threading import Thread, Lock, Condition
+
+PIN_LEFT = 16
+PIN_RIGHT = 23
+DETECTION_MARGIN = 100
+
+def user_Main():
+    print("Starting GPIO thread\n")
+    while(True):
+          x = 1
+          
 # -----------------------------------------------------------------------------------------------
 # User-defined class to be used in the callback function
 # -----------------------------------------------------------------------------------------------
@@ -23,12 +35,23 @@ class user_app_callback_class(app_callback_class):
 # User-defined callback function
 # -----------------------------------------------------------------------------------------------
 
+def stop_motor():
+    GPIO.output(PIN_LEFT, GPIO.LOW)
+    GPIO.output(PIN_RIGHT, GPIO.LOW)
+def turn_left():
+    GPIO.output(PIN_LEFT, GPIO.HIGH)
+    GPIO.output(PIN_RIGHT, GPIO.LOW)
+def turn_right():
+    GPIO.output(PIN_LEFT, GPIO.LOW)
+    GPIO.output(PIN_RIGHT, GPIO.HIGH)
+
 # This is the callback function that will be called when data is available from the pipeline
 def app_callback(pad, info, user_data):
     # Get the GstBuffer from the probe info
     buffer = info.get_buffer()
     # Check if the buffer is valid
     if buffer is None:
+        stop_motor()
         return Gst.PadProbeReturn.OK
 
     # Using the user_data to count the number of frames
@@ -51,12 +74,18 @@ def app_callback(pad, info, user_data):
     # Get the keypoints
     keypoints = get_keypoints()
 
+    if len(detections) is 0:
+        stop_motor()
+
     # Parse the detections
     for detection in detections:
         label = detection.get_label()
         bbox = detection.get_bbox()
         confidence = detection.get_confidence()
-        if label == "person":
+        
+        supportedTypes = ["person", "teddy bear", "animal", "dog"]
+        
+        if label in supportedTypes:
             # Get track ID
             track_id = 0
             track = detection.get_objects_typed(hailo.HAILO_UNIQUE_ID)
@@ -68,14 +97,30 @@ def app_callback(pad, info, user_data):
             landmarks = detection.get_objects_typed(hailo.HAILO_LANDMARKS)
             if len(landmarks) != 0:
                 points = landmarks[0].get_points()
-                for eye in ['left_eye', 'right_eye']:
-                    keypoint_index = keypoints[eye]
-                    point = points[keypoint_index]
-                    x = int((point.x() * bbox.width() + bbox.xmin()) * width)
-                    y = int((point.y() * bbox.height() + bbox.ymin()) * height)
-                    string_to_print += f"{eye}: x: {x:.2f} y: {y:.2f}\n"
-                    if user_data.use_frame:
-                        cv2.circle(frame, (x, y), 5, (0, 255, 0), -1)
+                leftShoulderIndex = keypoints["left_shoulder"]
+                rightShoulderIndex = keypoints["right_shoulder"]
+                leftShoulderPoint = points[leftShoulderIndex]
+                rightShoulderPoint = points[rightShoulderIndex]
+                leftX = int((leftShoulderPoint.x() * bbox.width() + bbox.xmin()) * width)
+                leftY = int((leftShoulderPoint.y() * bbox.height() + bbox.ymin()) * height)
+                rightX = int((rightShoulderPoint.x() * bbox.width() + bbox.xmin()) * width)
+                rightY = int((rightShoulderPoint.y() * bbox.height() + bbox.ymin()) * height)
+                centerX = int((leftX+rightX)/2)
+                centerY = int((leftY+rightY)/2)
+                string_to_print += f"Center: x: {centerX:.2f} y: {centerY:.2f}\n"
+                cv2.circle(frame, (centerX, centerY), 5, (0, 255, 0), -1)
+                global DETECTION_MARGIN
+                centerScreen = int(width/2)
+                if centerX < (centerScreen - DETECTION_MARGIN):
+                    turn_left()
+                    string_to_print += "Left\n"
+                elif centerX > (centerScreen + DETECTION_MARGIN):
+                    turn_right()
+                    string_to_print += "Right\n"
+                else:
+                    stop_motor()
+                    string_to_print += "Center\n"
+                    
 
     if user_data.use_frame:
         # Convert the frame to BGR
@@ -111,6 +156,12 @@ def get_keypoints():
     return keypoints
 
 if __name__ == "__main__":
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(PIN_LEFT, GPIO.OUT)
+    GPIO.setup(PIN_RIGHT, GPIO.OUT)
+
+    GPIO.output(PIN_LEFT, GPIO.LOW)
+    GPIO.output(PIN_RIGHT, GPIO.LOW)
     project_root = Path(__file__).resolve().parent.parent
     env_file     = project_root / ".env"
     env_path_str = str(env_file)
