@@ -19,7 +19,8 @@ from gpiozero import PWMLED
 PIN_LEFT = 16
 PIN_RIGHT = 23
 PIN_PWM_LEFT = 12
-PWM_LEFT = PWMLED(PIN_PWM_LEFT)
+PWM_LEFT = PWMLED(16)
+PWM_RIGHT = PWMLED(23)
 DETECTION_MARGIN = 150
 PREVIOUS_ID = -1
 CURRENT_ID = -1
@@ -29,34 +30,6 @@ ID_IN_LIST = False
 MOTOR_INTERRUPT = False
 MOTOR_MOVING = False
 MOTOR_SPIN_LENGTH = 0.1
-
-def MoveMotor(time, direction):
-    global MOTOR_INTERRUPT
-    global MOTOR_MOVING
-    currentTime = 0
-
-    if MOTOR_MOVING == True:
-        MOTOR_INTERRUPT = True
-    
-    while(MOTOR_INTERRUPT or MOTOR_MOVING):
-        time.sleep(0)
-
-    MOTOR_MOVING  = True
-    if MOTOR_INTERRUPT == False:
-        if direction == True:
-            turn_left()
-        else:
-            turn_right()
-
-    while(currentTime < time):
-        if MOTOR_INTERRUPT == True:
-            return
-        currentTime += 1
-
-    MOTOR_MOVING = False
-    stop_motor()
-    MOTOR_INTERRUPT = False
-        
 
 # -----------------------------------------------------------------------------------------------
 # User-defined class to be used in the callback function
@@ -96,7 +69,8 @@ def turn_left():
     GPIO.output(PIN_RIGHT, GPIO.LOW)
 def turn_right():
     GPIO.output(PIN_LEFT, GPIO.LOW)
-    GPIO.output(PIN_RIGHT, GPIO.HIGH)
+    #GPIO.output(PIN_RIGHT, GPIO.HIGH)
+    PWM_RIGHT.pulse(0.1,0.1,1,True)
 
 # This is the callback function that will be called when data is available from the pipeline
 def app_callback(pad, info, user_data):
@@ -197,15 +171,9 @@ def app_callback(pad, info, user_data):
                 global DETECTION_MARGIN
                 centerScreen = int(width/2)
                 if centerX < (centerScreen - DETECTION_MARGIN):
-                    # thread = Thread(target=MoveMotor, args=(MOTOR_SPIN_LENGTH, True))
-                    # thread.daemon = True
-                    # thread.start()
                     turn_left()
                     string_to_print += "Left\n"
                 elif centerX > (centerScreen + DETECTION_MARGIN):
-                    # thread = Thread(target=MoveMotor, args=(MOTOR_SPIN_LENGTH, False))
-                    # thread.daemon = True
-                    # thread.start()
                     turn_right()
                     string_to_print += "Right\n"
                 else:
