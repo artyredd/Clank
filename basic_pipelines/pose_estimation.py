@@ -14,13 +14,9 @@ from hailo_apps.hailo_app_python.apps.pose_estimation.pose_estimation_pipeline i
 import RPi.GPIO as GPIO
 from threading import Thread, Lock, Condition
 import time
-from gpiozero import PWMLED
 
 PIN_LEFT = 16
 PIN_RIGHT = 23
-PIN_PWM_LEFT = 12
-PWM_LEFT = PWMLED(16)
-PWM_RIGHT = PWMLED(23)
 DETECTION_MARGIN = 150
 PREVIOUS_ID = -1
 CURRENT_ID = -1
@@ -31,6 +27,34 @@ MOTOR_INTERRUPT = False
 MOTOR_MOVING = False
 MOTOR_SPIN_LENGTH = 0.1
 
+def MoveMotor(time, direction):
+    global MOTOR_INTERRUPT
+    global MOTOR_MOVING
+    currentTime = 0
+
+    if MOTOR_MOVING == True:
+        MOTOR_INTERRUPT = True
+    
+    while(MOTOR_INTERRUPT or MOTOR_MOVING):
+        time.sleep(0)
+
+    MOTOR_MOVING  = True
+    if MOTOR_INTERRUPT == False:
+        if direction == True:
+            turn_left()
+        else:
+            turn_right()
+
+    while(currentTime < time):
+        if MOTOR_INTERRUPT == True:
+            return
+        currentTime += 1
+
+    MOTOR_MOVING = False
+    stop_motor()
+    MOTOR_INTERRUPT = False
+        
+
 # -----------------------------------------------------------------------------------------------
 # User-defined class to be used in the callback function
 # -----------------------------------------------------------------------------------------------
@@ -38,23 +62,6 @@ MOTOR_SPIN_LENGTH = 0.1
 class user_app_callback_class(app_callback_class):
     def __init__(self):
         super().__init__()
-
-class MyAppWrapper(GStreamerPoseEstimationApp):
-    def __init__(self):
-        super().__init__()
-
-    def get_pipeline_string(self):  
-        # ... your other pipeline components ...  
-        # Custom display pipeline with scaling  
-        display_pipeline = (  
-            f'{OVERLAY_PIPELINE(name="overlay")} ! '  
-            f'videoconvert ! '  
-            f'videoscale ! '  
-            f'video/x-raw,width=1920,height=1080 ! '  # Set your desired size here
-            f'xvimagesink sync={self.sync}'  
-        )  
-        
-        return f"{source_pipeline} ! {inference_pipeline} ! {display_pipeline}"
 
 # -----------------------------------------------------------------------------------------------
 # User-defined callback function
@@ -64,15 +71,11 @@ def stop_motor():
     GPIO.output(PIN_LEFT, GPIO.LOW)
     GPIO.output(PIN_RIGHT, GPIO.LOW)
 def turn_left():
-    print()
-    #PWM_LEFT.pulse(0.01,0.01,1,True)
-    #GPIO.output(PIN_LEFT, GPIO.HIGH)
-    #GPIO.output(PIN_RIGHT, GPIO.LOW)
+    GPIO.output(PIN_LEFT, GPIO.HIGH)
+    GPIO.output(PIN_RIGHT, GPIO.LOW)
 def turn_right():
-    print()
-    #GPIO.output(PIN_LEFT, GPIO.LOW)
-    #GPIO.output(PIN_RIGHT, GPIO.HIGH)
-    #PWM_RIGHT.pulse(0.01,0.01,1,True)
+    GPIO.output(PIN_LEFT, GPIO.LOW)
+    GPIO.output(PIN_RIGHT, GPIO.HIGH)
 
 # This is the callback function that will be called when data is available from the pipeline
 def app_callback(pad, info, user_data):
@@ -173,9 +176,15 @@ def app_callback(pad, info, user_data):
                 global DETECTION_MARGIN
                 centerScreen = int(width/2)
                 if centerX < (centerScreen - DETECTION_MARGIN):
+                    # thread = Thread(target=MoveMotor, args=(MOTOR_SPIN_LENGTH, True))
+                    # thread.daemon = True
+                    # thread.start()
                     turn_left()
                     string_to_print += "Left\n"
                 elif centerX > (centerScreen + DETECTION_MARGIN):
+                    # thread = Thread(target=MoveMotor, args=(MOTOR_SPIN_LENGTH, False))
+                    # thread.daemon = True
+                    # thread.start()
                     turn_right()
                     string_to_print += "Right\n"
                 else:
@@ -232,7 +241,6 @@ if __name__ == "__main__":
         # Create an instance of the user app callback class
         user_data = user_app_callback_class()
         app = GStreamerPoseEstimationApp(app_callback, user_data)
-        app.set_pi
         app.run()
     except KeyboardInterrupt:
         stop_motor()
