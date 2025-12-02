@@ -10,7 +10,6 @@ sudo apt -y install pip
 sudo apt -y install pipx
 echo "GitHub Token: is in drive/backup/passwords/github clank key"
 sudo gh auth login
-sudo git clone https://github.com/artyredd/Clank.git
 echo enable pcie3, and auto-login
 sudo raspi-config
 echo did u enable pcie3, and auto-login?
@@ -39,4 +38,6 @@ sudo nano /config/config.yaml
 sudo ./install.sh
 
 cd ~
-cp -r /Clank /hailo-rpi5-examples
+sudo git clone https://github.com/artyredd/Clank.git
+sudo cp -r /home/arty/Clank/. /home/arty/hailo-rpi5-examples
+cd hailo-rpi5-examples
