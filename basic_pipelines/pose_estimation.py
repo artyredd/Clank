@@ -64,13 +64,13 @@ def stop_motor():
     GPIO.output(PIN_LEFT, GPIO.LOW)
     GPIO.output(PIN_RIGHT, GPIO.LOW)
 def turn_left():
-    PWM_LEFT.pulse(0.1,0.1,1,True)
+    PWM_LEFT.pulse(0.01,0.01,1,True)
     #GPIO.output(PIN_LEFT, GPIO.HIGH)
     GPIO.output(PIN_RIGHT, GPIO.LOW)
 def turn_right():
     GPIO.output(PIN_LEFT, GPIO.LOW)
     #GPIO.output(PIN_RIGHT, GPIO.HIGH)
-    PWM_RIGHT.pulse(0.1,0.1,1,True)
+    PWM_RIGHT.pulse(0.01,0.01,1,True)
 
 # This is the callback function that will be called when data is available from the pipeline
 def app_callback(pad, info, user_data):
