@@ -14,6 +14,7 @@ from hailo_apps.hailo_app_python.apps.pose_estimation.pose_estimation_pipeline i
 import RPi.GPIO as GPIO
 from threading import Thread, Lock, Condition
 import time
+from gpiozero import PWMLED
 
 PIN_LEFT = 16
 PIN_RIGHT = 23
@@ -62,6 +63,23 @@ def MoveMotor(time, direction):
 class user_app_callback_class(app_callback_class):
     def __init__(self):
         super().__init__()
+
+class MyAppWrapper(GStreamerPoseEstimationApp):
+    def __init__(self):
+        super().__init__()
+
+    def get_pipeline_string(self):  
+        # ... your other pipeline components ...  
+        # Custom display pipeline with scaling  
+        display_pipeline = (  
+            f'{OVERLAY_PIPELINE(name="overlay")} ! '  
+            f'videoconvert ! '  
+            f'videoscale ! '  
+            f'video/x-raw,width=1920,height=1080 ! '  # Set your desired size here
+            f'xvimagesink sync={self.sync}'  
+        )  
+        
+        return f"{source_pipeline} ! {inference_pipeline} ! {display_pipeline}"
 
 # -----------------------------------------------------------------------------------------------
 # User-defined callback function
@@ -172,7 +190,7 @@ def app_callback(pad, info, user_data):
                 centerX = int((leftX+rightX)/2)
                 centerY = int((leftY+rightY)/2)
                 string_to_print += f"Center: x: {centerX:.2f} y: {centerY:.2f}\n"
-                cv2.circle(frame, (centerX, centerY), 5, (0, 255, 0), -1)
+                #cv2.circle(frame, (centerX, centerY), 5, (0, 255, 0), -1)
                 global DETECTION_MARGIN
                 centerScreen = int(width/2)
                 if centerX < (centerScreen - DETECTION_MARGIN):
@@ -227,17 +245,21 @@ def get_keypoints():
     return keypoints
 
 if __name__ == "__main__":
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(PIN_LEFT, GPIO.OUT)
-    GPIO.setup(PIN_RIGHT, GPIO.OUT)
+    try:
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(PIN_LEFT, GPIO.OUT)
+        GPIO.setup(PIN_RIGHT, GPIO.OUT)
 
-    GPIO.output(PIN_LEFT, GPIO.LOW)
-    GPIO.output(PIN_RIGHT, GPIO.LOW)
-    project_root = Path(__file__).resolve().parent.parent
-    env_file     = project_root / ".env"
-    env_path_str = str(env_file)
-    os.environ["HAILO_ENV_FILE"] = env_path_str
-    # Create an instance of the user app callback class
-    user_data = user_app_callback_class()
-    app = GStreamerPoseEstimationApp(app_callback, user_data)
-    app.run()
+        GPIO.output(PIN_LEFT, GPIO.LOW)
+        GPIO.output(PIN_RIGHT, GPIO.LOW)
+        project_root = Path(__file__).resolve().parent.parent
+        env_file     = project_root / ".env"
+        env_path_str = str(env_file)
+        os.environ["HAILO_ENV_FILE"] = env_path_str
+        # Create an instance of the user app callback class
+        user_data = user_app_callback_class()
+        app = GStreamerPoseEstimationApp(app_callback, user_data)
+        app.set_pi
+        app.run()
+    except KeyboardInterrupt:
+        stop_motor()
