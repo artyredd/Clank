@@ -18,6 +18,8 @@ from gpiozero import PWMLED
 
 PIN_LEFT = 16
 PIN_RIGHT = 23
+PIN_PWM_LEFT = 12
+PWM_LEFT = PWMLED(PIN_PWM_LEFT)
 DETECTION_MARGIN = 150
 PREVIOUS_ID = -1
 CURRENT_ID = -1
@@ -89,7 +91,8 @@ def stop_motor():
     GPIO.output(PIN_LEFT, GPIO.LOW)
     GPIO.output(PIN_RIGHT, GPIO.LOW)
 def turn_left():
-    GPIO.output(PIN_LEFT, GPIO.HIGH)
+    PWM_LEFT.pulse(0.1,0.1,1,True)
+    #GPIO.output(PIN_LEFT, GPIO.HIGH)
     GPIO.output(PIN_RIGHT, GPIO.LOW)
 def turn_right():
     GPIO.output(PIN_LEFT, GPIO.LOW)
