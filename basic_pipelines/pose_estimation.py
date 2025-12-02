@@ -44,6 +44,7 @@ def MoveMotor(time, direction):
             turn_left()
         else:
             turn_right()
+        time.sleep(0.001)
 
     while(currentTime < time):
         if MOTOR_INTERRUPT == True:
@@ -176,16 +177,16 @@ def app_callback(pad, info, user_data):
                 global DETECTION_MARGIN
                 centerScreen = int(width/2)
                 if centerX < (centerScreen - DETECTION_MARGIN):
-                    # thread = Thread(target=MoveMotor, args=(MOTOR_SPIN_LENGTH, True))
-                    # thread.daemon = True
-                    # thread.start()
-                    turn_left()
+                    thread = Thread(target=MoveMotor, args=(MOTOR_SPIN_LENGTH, True))
+                    thread.daemon = True
+                    thread.start()
+                    #turn_left()
                     string_to_print += "Left\n"
                 elif centerX > (centerScreen + DETECTION_MARGIN):
-                    # thread = Thread(target=MoveMotor, args=(MOTOR_SPIN_LENGTH, False))
-                    # thread.daemon = True
-                    # thread.start()
-                    turn_right()
+                    thread = Thread(target=MoveMotor, args=(MOTOR_SPIN_LENGTH, False))
+                    thread.daemon = True
+                    thread.start()
+                    #turn_right()
                     string_to_print += "Right\n"
                 else:
                     stop_motor()
