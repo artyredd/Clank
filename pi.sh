@@ -47,4 +47,7 @@ sudo chmod +x run.sh
 sudo chmod +x startup.sh
 
 cd ~
-sudo $HOME/.config/labwc/autostart
+# add /usr/bin/lxterminal -e /home/arty/Clank/startup.sh to end of file
+sudo nano /etc/xdg/labwc/autostart
+
+#reboot
