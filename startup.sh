@@ -12,4 +12,4 @@ sleep 1
 echo "[.....]"
 sleep 1
 
-lxterminal -e DISPLAY=:0 /home/arty/Clank/run.sh &
+lxterminal -e "DISPLAY=:0 /home/arty/Clank/run.sh &"
