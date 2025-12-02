@@ -207,3 +207,5 @@ if __name__ == "__main__":
         app.run()
     except KeyboardInterrupt:
         stop_motor()
+    except:
+        stop_motor()
