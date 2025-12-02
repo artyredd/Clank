@@ -45,4 +45,6 @@ sudo cp -r /home/arty/Clank/. /home/arty/hailo-rpi5-examples
 cd Clank
 sudo chmod +x run.sh
 sudo chmod +x startup.sh
-cd hailo-rpi5-examples
+
+cd ~
+sudo $HOME/.config/labwc/autostart
