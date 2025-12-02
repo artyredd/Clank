@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Starting in 5 seconds..."
-echo "[.     ]"
+echo "[.    ]"
 sleep 1
 echo "[..   ]"
 sleep 1
@@ -12,4 +12,4 @@ sleep 1
 echo "[.....]"
 sleep 1
 
-/run.sh
+/home/arty/Clank/run.sh

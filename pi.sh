@@ -39,5 +39,10 @@ sudo ./install.sh
 
 cd ~
 sudo git clone https://github.com/artyredd/Clank.git
+sudo chown -R arty Clank
+sudo chmod 777 Clank
 sudo cp -r /home/arty/Clank/. /home/arty/hailo-rpi5-examples
+cd Clank
+sudo chmod +x run.sh
+sudo chmod +x startup.sh
 cd hailo-rpi5-examples
