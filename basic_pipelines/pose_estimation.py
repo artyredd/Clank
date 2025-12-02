@@ -23,38 +23,6 @@ CURRENT_ID = -1
 TIME_AT_LAST_ID_CHANGE = -30
 MAX_TIME_PER_ID = 15
 ID_IN_LIST = False
-MOTOR_INTERRUPT = False
-MOTOR_MOVING = False
-MOTOR_SPIN_LENGTH = 0.1
-
-def MoveMotor(time, direction):
-    global MOTOR_INTERRUPT
-    global MOTOR_MOVING
-    currentTime = 0
-
-    if MOTOR_MOVING == True:
-        MOTOR_INTERRUPT = True
-    
-    while(MOTOR_INTERRUPT or MOTOR_MOVING):
-        time.sleep(0)
-
-    MOTOR_MOVING  = True
-    if MOTOR_INTERRUPT == False:
-        if direction == True:
-            turn_left()
-        else:
-            turn_right()
-        time.sleep(0.001)
-
-    while(currentTime < time):
-        if MOTOR_INTERRUPT == True:
-            return
-        currentTime += 1
-
-    MOTOR_MOVING = False
-    stop_motor()
-    MOTOR_INTERRUPT = False
-        
 
 # -----------------------------------------------------------------------------------------------
 # User-defined class to be used in the callback function
@@ -177,16 +145,10 @@ def app_callback(pad, info, user_data):
                 global DETECTION_MARGIN
                 centerScreen = int(width/2)
                 if centerX < (centerScreen - DETECTION_MARGIN):
-                    thread = Thread(target=MoveMotor, args=(MOTOR_SPIN_LENGTH, True))
-                    thread.daemon = True
-                    thread.start()
-                    #turn_left()
+                    turn_left()
                     string_to_print += "Left\n"
                 elif centerX > (centerScreen + DETECTION_MARGIN):
-                    thread = Thread(target=MoveMotor, args=(MOTOR_SPIN_LENGTH, False))
-                    thread.daemon = True
-                    thread.start()
-                    #turn_right()
+                    turn_right()
                     string_to_print += "Right\n"
                 else:
                     stop_motor()
