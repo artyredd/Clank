@@ -28,7 +28,7 @@ pwmRight = GPIO.PWM(GPIO_RIGHT, 50)
 pwmLeft.start(0)
 pwmRight.start(0)
 
-for freq in range(50,1000, 50):
+for freq in range(100,4000, 100):
     pwmLeft.ChangeFrequency(freq)
     print(f"Testing: {freq}\n")
     print(f"[", end='', flush=True)
@@ -36,7 +36,7 @@ for freq in range(50,1000, 50):
         print(".", end='', flush=True)
         pwmLeft.ChangeDutyCycle(dc)
         #pwmRight.ChangeDutyCycle(dc)
-        time.sleep(.1)
+        time.sleep(.025)
     print(f"]\n")
 
 # for dc in range(100, -1, -1):
