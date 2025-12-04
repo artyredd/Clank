@@ -14,6 +14,7 @@ GPIO_LEFT = 16
 GPIO_RIGHT = 26
 
 GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 
 GPIO.setup(GPIO_LEFT, GPIO.OUT)
 GPIO.setup(GPIO_RIGHT, GPIO.OUT)
@@ -38,8 +39,6 @@ for dc in range(100, -1, -1):
     time.sleep(.1)
 
 pwmLeft.stop()
-
-
 
 #pwmRight.stop()
 GPIO.cleanup()
