@@ -35,9 +35,7 @@ PWM_LEFT = None
 class user_app_callback_class(app_callback_class):
     def __init__(self):
         super().__init__()
-        self.frame_width =  640    
-        self.frame_height = 480
-
+        
 # -----------------------------------------------------------------------------------------------
 # User-defined callback function
 # -----------------------------------------------------------------------------------------------
