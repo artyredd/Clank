@@ -221,10 +221,10 @@ if __name__ == "__main__":
         os.environ["HAILO_ENV_FILE"] = env_path_str
         # Create an instance of the user app callback class
         user_data = user_app_callback_class()
+        user_data.video_width = 640
+        user_data.video_height = 480
         
         app = GStreamerPoseEstimationApp(app_callback, user_data)
-        app.video_width = 640
-        app.video_height = 480
         app.run()
     except KeyboardInterrupt:
         stop_motor()
