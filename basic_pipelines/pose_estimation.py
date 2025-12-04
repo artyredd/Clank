@@ -36,6 +36,10 @@ PWM_LEFT = None
 LAST_DUTY = 10
 T = 0
 
+def getDuty():
+    global T
+    return MAX_PWM_DUTY * (0.5 * ( 10.0 / (5 + 0.2(math.exp(10-(10*(T/100)))))))
+
 def stop_motor():
     global LAST_DUTY
     global T
@@ -51,7 +55,7 @@ def turn_left():
     LAST_DUTY += DUTY_STEPPING_SPEED
     if LAST_DUTY > MAX_PWM_DUTY:
         LAST_DUTY = MAX_PWM_DUTY
-    DUTY = MAX_PWM_DUTY * (1 - (1/(1+(0.011*math.exp((1/10)*T)))))
+    DUTY = getDuty()
     T += 1
     PWM_LEFT.ChangeDutyCycle(DUTY)
     PWM_RIGHT.ChangeDutyCycle(0)
@@ -62,9 +66,8 @@ def turn_right():
     LAST_DUTY += DUTY_STEPPING_SPEED
     if LAST_DUTY > MAX_PWM_DUTY:
         LAST_DUTY = MAX_PWM_DUTY
-    DUTY = MAX_PWM_DUTY * (1 - (1/(1+0.011*math.exp(T))))
+    DUTY = getDuty()
     T += 1
-    PWM_LEFT.ChangeDutyCycle(DUTY)
     PWM_LEFT.ChangeDutyCycle(0)
     PWM_RIGHT.ChangeDutyCycle(DUTY)
 
