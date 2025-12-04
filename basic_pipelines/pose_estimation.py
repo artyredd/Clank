@@ -38,7 +38,7 @@ T = 0
 
 def getDuty():
     global T
-    return MAX_PWM_DUTY * (0.5 * ( 10.0 / (5 + 0.2(math.exp(10-(10*(T/100)))))))
+    return MAX_PWM_DUTY * (0.5 * ( 10.0 / (5 + 0.2*(math.exp(10-(10*(T/100)))))))
 
 def stop_motor():
     global LAST_DUTY
