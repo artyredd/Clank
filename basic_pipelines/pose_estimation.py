@@ -6,7 +6,6 @@ import os
 import numpy as np
 import cv2
 import hailo
-import math 
 
 from hailo_apps.hailo_app_python.core.common.buffer_utils import get_caps_from_pad, get_numpy_from_buffer
 from hailo_apps.hailo_app_python.core.gstreamer.gstreamer_app import app_callback_class
@@ -21,8 +20,8 @@ import time
 PIN_LEFT = 16
 PIN_RIGHT = 13
 PWM_FREQ = 200
-PWM_DUTY = 1
-MAX_PWM_DUTY = 30
+PWM_DUTY = 2
+MAX_PWM_DUTY = 100
 DUTY_STEPPING_SPEED = 0.3
 DETECTION_MARGIN = 25
 PREVIOUS_ID = -1
@@ -34,42 +33,29 @@ PWM_RIGHT = None
 PWM_LEFT = None
 
 LAST_DUTY = 10
-T = 0
-
-def getDuty():
-    global T
-    return MAX_PWM_DUTY * (0.5 * ( 10.0 / (5 + 0.2*(math.exp(10-(10*(T/100)))))))
 
 def stop_motor():
     global LAST_DUTY
-    global T
     PWM_LEFT.ChangeDutyCycle(0)
     PWM_RIGHT.ChangeDutyCycle(0)
     LAST_DUTY = PWM_DUTY
-    T = 0
 
 def turn_left():
-    global T
     global LAST_DUTY
     global MAX_PWM_DUTY
     LAST_DUTY += DUTY_STEPPING_SPEED
     if LAST_DUTY > MAX_PWM_DUTY:
         LAST_DUTY = MAX_PWM_DUTY
-    DUTY = getDuty()
-    T += 1
-    PWM_LEFT.ChangeDutyCycle(DUTY)
+    PWM_LEFT.ChangeDutyCycle(LAST_DUTY)
     PWM_RIGHT.ChangeDutyCycle(0)
 def turn_right():
-    global T
     global LAST_DUTY
     global MAX_PWM_DUTY
     LAST_DUTY += DUTY_STEPPING_SPEED
     if LAST_DUTY > MAX_PWM_DUTY:
         LAST_DUTY = MAX_PWM_DUTY
-    DUTY = getDuty()
-    T += 1
     PWM_LEFT.ChangeDutyCycle(0)
-    PWM_RIGHT.ChangeDutyCycle(DUTY)
+    PWM_RIGHT.ChangeDutyCycle(LAST_DUTY)
 
 # -----------------------------------------------------------------------------------------------
 # User-defined class to be used in the callback function
