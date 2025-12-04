@@ -40,22 +40,22 @@ def stop_motor():
     PWM_RIGHT.ChangeDutyCycle(0)
     LAST_DUTY = PWM_DUTY
 
-def turn_left():
+def turn_left(distance):
     global LAST_DUTY
     global MAX_PWM_DUTY
     LAST_DUTY += DUTY_STEPPING_SPEED
     if LAST_DUTY > MAX_PWM_DUTY:
         LAST_DUTY = MAX_PWM_DUTY
-    PWM_LEFT.ChangeDutyCycle(LAST_DUTY)
+    PWM_LEFT.ChangeDutyCycle((1-distance) * LAST_DUTY)
     PWM_RIGHT.ChangeDutyCycle(0)
-def turn_right():
+def turn_right(distance):
     global LAST_DUTY
     global MAX_PWM_DUTY
     LAST_DUTY += DUTY_STEPPING_SPEED
     if LAST_DUTY > MAX_PWM_DUTY:
         LAST_DUTY = MAX_PWM_DUTY
     PWM_LEFT.ChangeDutyCycle(0)
-    PWM_RIGHT.ChangeDutyCycle(LAST_DUTY)
+    PWM_RIGHT.ChangeDutyCycle((1-distance) * LAST_DUTY)
 
 # -----------------------------------------------------------------------------------------------
 # User-defined class to be used in the callback function
@@ -182,10 +182,10 @@ def app_callback(pad, info, user_data):
                 global DETECTION_MARGIN
                 centerScreen = int(width/2)
                 if centerX < (centerScreen - DETECTION_MARGIN):
-                    turn_left()
+                    turn_left(centerX/centerScreen)
                     string_to_print += "Left\n"
                 elif centerX > (centerScreen + DETECTION_MARGIN):
-                    turn_right()
+                    turn_right((centerX-centerScreen) / centerScreen)
                     string_to_print += "Right\n"
                 else:
                     stop_motor()
