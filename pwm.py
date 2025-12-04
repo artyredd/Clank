@@ -21,22 +21,25 @@ GPIO.setup(GPIO_RIGHT, GPIO.OUT)
 GPIO.output(GPIO_LEFT, GPIO.LOW)
 GPIO.output(GPIO_RIGHT, GPIO.LOW)
 
-pwmLeft = GPIO.PWM(GPIO_LEFT, 100)
-pwmRight = GPIO.PWM(GPIO_RIGHT, 100)
+pwmLeft = GPIO.PWM(GPIO_LEFT, 1000)
+pwmRight = GPIO.PWM(GPIO_RIGHT, 1000)
 
 pwmLeft.start(0)
 #pwmRight.start(0)
 
-for dc in range(0, 101, 1):
+for dc in range(0, 1001, 1):
     pwmLeft.ChangeDutyCycle(dc)
     #pwmRight.ChangeDutyCycle(dc)
     time.sleep(.1)
 
-for dc in range(100, -1, -1):
+for dc in range(1000, -1, -1):
     pwmLeft.ChangeDutyCycle(dc)
     #pwmRight.ChangeDutyCycle(dc)
     time.sleep(.1)
 
 pwmLeft.stop()
+
+
+
 #pwmRight.stop()
 GPIO.cleanup()
