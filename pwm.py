@@ -30,8 +30,7 @@ pwmRight.start(0)
 
 for freq in range(100,4000, 100):
     pwmLeft.ChangeFrequency(freq)
-    print(f"Testing: {freq}\n")
-    print(f"[", end='', flush=True)
+    print(f"{freq}Hz [", end='', flush=True)
     for dc in range(0, 101, 1):
         print(".", end='', flush=True)
         pwmLeft.ChangeDutyCycle(dc)
