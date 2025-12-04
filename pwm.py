@@ -11,7 +11,7 @@ import RPi.GPIO as GPIO
 from threading import Thread, Lock, Condition
 
 GPIO_LEFT = 16
-GPIO_RIGHT = 26
+GPIO_RIGHT = 13
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -28,21 +28,39 @@ pwmRight = GPIO.PWM(GPIO_RIGHT, 200)
 pwmLeft.start(0)
 pwmRight.start(0)
 
-for freq in range(200,201, 1):
-    pwmLeft.ChangeFrequency(freq)
-    print(f"{freq}Hz [", end='', flush=True)
-    for dc in range(0, 101, 1):
-        print(".", end='', flush=True)
-        pwmLeft.ChangeDutyCycle(dc)
-        #pwmRight.ChangeDutyCycle(dc)
-        time.sleep(.025)
-    print(f"]\n")
+# for freq in range(200,201, 1):
+#     pwmLeft.ChangeFrequency(freq)
+#     print(f"{freq}Hz [", end='', flush=True)
+#     for dc in range(0, 101, 1):
+#         print(".", end='', flush=True)
+#         pwmLeft.ChangeDutyCycle(dc)
+#         #pwmRight.ChangeDutyCycle(dc)
+#         time.sleep(.025)
+#     print(f"]\n")
 
 # for dc in range(100, -1, -1):
 #     pwmLeft.ChangeDutyCycle(dc)
 #     #pwmRight.ChangeDutyCycle(dc)
 #     time.sleep(.1)
 
+try:
+    while True:
+        for dc in range(0, 101, 1):
+                print(".", end='', flush=True)
+                pwmLeft.ChangeDutyCycle(dc)
+                #pwmRight.ChangeDutyCycle(dc)
+                time.sleep(.025)
 
-#pwmRight.stop()
-GPIO.cleanup()
+        pwmLeft.ChangeDutyCycle(0)
+
+        for dc in range(0, 101, 1):
+                print(".", end='', flush=True)
+                pwmRight.ChangeDutyCycle(dc)
+                #pwmRight.ChangeDutyCycle(dc)
+                time.sleep(.025)
+except:
+    print("Quitting")
+    pwmRight.ChangeDutyCycle(0)
+
+    pwmRight.stop()
+    pwmLeft.stop()
