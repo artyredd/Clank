@@ -51,7 +51,7 @@ def turn_left():
     LAST_DUTY += DUTY_STEPPING_SPEED
     if LAST_DUTY > MAX_PWM_DUTY:
         LAST_DUTY = MAX_PWM_DUTY
-    DUTY = MAX_PWM_DUTY * (1 - (1/(1+(0.011*math.exp((1/8)*T)))))
+    DUTY = MAX_PWM_DUTY * (1 - (1/(1+(0.011*math.exp((1/10)*T)))))
     T += 1
     PWM_LEFT.ChangeDutyCycle(DUTY)
     PWM_RIGHT.ChangeDutyCycle(0)
