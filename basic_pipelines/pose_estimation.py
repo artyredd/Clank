@@ -42,7 +42,7 @@ def stop_motor():
 def turn_left():
     global LAST_DUTY
     global MAX_PWM_DUTY
-    LAST_DUTY += 1
+    LAST_DUTY += 0.25
     if LAST_DUTY > MAX_PWM_DUTY:
         LAST_DUTY = MAX_PWM_DUTY
     PWM_LEFT.ChangeDutyCycle(LAST_DUTY)
@@ -50,7 +50,7 @@ def turn_left():
 def turn_right():
     global LAST_DUTY
     global MAX_PWM_DUTY
-    LAST_DUTY += 1
+    LAST_DUTY += 0.25
     if LAST_DUTY > MAX_PWM_DUTY:
         LAST_DUTY = MAX_PWM_DUTY
     PWM_LEFT.ChangeDutyCycle(0)
