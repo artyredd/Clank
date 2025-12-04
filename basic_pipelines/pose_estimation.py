@@ -40,8 +40,8 @@ class user_app_callback_class(app_callback_class):
 
 class MyGstreamer(GStreamerPoseEstimationApp):
     def __init__(self, arg1, arg2):
-        super().__init__(self, arg1, arg2)
-        
+        super().__init__(arg1, arg2)
+
     def get_pipeline_string(self):
         width = 640
         height = 480
