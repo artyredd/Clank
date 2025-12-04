@@ -39,8 +39,9 @@ class user_app_callback_class(app_callback_class):
         super().__init__()
 
 class MyGstreamer(GStreamerPoseEstimationApp):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, arg1, arg2):
+        super().__init__(self, arg1, arg2)
+        
     def get_pipeline_string(self):
         width = 640
         height = 480
@@ -232,7 +233,7 @@ if __name__ == "__main__":
         # Create an instance of the user app callback class
         user_data = user_app_callback_class()
         
-        app = GStreamerPoseEstimationApp(app_callback, user_data)
+        app = MyGstreamer(app_callback, user_data)
         app.run()
     except KeyboardInterrupt:
         stop_motor()
