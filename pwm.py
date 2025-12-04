@@ -22,13 +22,13 @@ GPIO.setup(GPIO_RIGHT, GPIO.OUT)
 GPIO.output(GPIO_LEFT, GPIO.LOW)
 GPIO.output(GPIO_RIGHT, GPIO.LOW)
 
-pwmLeft = GPIO.PWM(GPIO_LEFT, 50)
-pwmRight = GPIO.PWM(GPIO_RIGHT, 50)
+pwmLeft = GPIO.PWM(GPIO_LEFT, 200)
+pwmRight = GPIO.PWM(GPIO_RIGHT, 200)
 
 pwmLeft.start(0)
 pwmRight.start(0)
 
-for freq in range(100,100000, 1000):
+for freq in range(1,1, 1):
     pwmLeft.ChangeFrequency(freq)
     print(f"{freq}Hz [", end='', flush=True)
     for dc in range(0, 101, 1):
