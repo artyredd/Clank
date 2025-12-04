@@ -28,7 +28,7 @@ pwmRight = GPIO.PWM(GPIO_RIGHT, 50)
 pwmLeft.start(0)
 pwmRight.start(0)
 
-for freq in range(100,4000, 100):
+for freq in range(100,100000, 1000):
     pwmLeft.ChangeFrequency(freq)
     print(f"{freq}Hz [", end='', flush=True)
     for dc in range(0, 101, 1):
