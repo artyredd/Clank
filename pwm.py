@@ -58,6 +58,8 @@ try:
                 pwmRight.ChangeDutyCycle(dc)
                 #pwmRight.ChangeDutyCycle(dc)
                 time.sleep(.025)
+                
+        pwmRight.ChangeDutyCycle(0)
 except:
     print("Quitting")
     pwmRight.ChangeDutyCycle(0)
