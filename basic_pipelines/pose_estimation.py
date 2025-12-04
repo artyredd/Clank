@@ -30,18 +30,21 @@ ID_IN_LIST = False
 PWM_RIGHT = None
 PWM_LEFT = None
 
-LAST_DUTY = PWM_DUTY
+LAST_DUTY = 10
 
 def stop_motor():
+    global LAST_DUTY
     PWM_LEFT.ChangeDutyCycle(0)
     PWM_RIGHT.ChangeDutyCycle(0)
     LAST_DUTY = PWM_DUTY
 
 def turn_left():
+    global LAST_DUTY
     LAST_DUTY += 1
     PWM_LEFT.ChangeDutyCycle(PWM_DUTY)
     PWM_RIGHT.ChangeDutyCycle(LAST_DUTY)
 def turn_right():
+    global LAST_DUTY
     LAST_DUTY += 1
     PWM_LEFT.ChangeDutyCycle(0)
     PWM_RIGHT.ChangeDutyCycle(LAST_DUTY)
