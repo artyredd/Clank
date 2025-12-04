@@ -6,6 +6,7 @@ import os
 import numpy as np
 import cv2
 import hailo
+import math 
 
 from hailo_apps.hailo_app_python.core.common.buffer_utils import get_caps_from_pad, get_numpy_from_buffer
 from hailo_apps.hailo_app_python.core.gstreamer.gstreamer_app import app_callback_class
@@ -33,29 +34,39 @@ PWM_RIGHT = None
 PWM_LEFT = None
 
 LAST_DUTY = 10
+T = 0
 
 def stop_motor():
     global LAST_DUTY
+    global T
     PWM_LEFT.ChangeDutyCycle(0)
     PWM_RIGHT.ChangeDutyCycle(0)
     LAST_DUTY = PWM_DUTY
+    T = 0
 
 def turn_left():
+    global T
     global LAST_DUTY
     global MAX_PWM_DUTY
     LAST_DUTY += DUTY_STEPPING_SPEED
     if LAST_DUTY > MAX_PWM_DUTY:
         LAST_DUTY = MAX_PWM_DUTY
-    PWM_LEFT.ChangeDutyCycle(LAST_DUTY)
+    DUTY = 1 - (1/(1+0.011*math.exp(T)))
+    T += 1
+    PWM_LEFT.ChangeDutyCycle(DUTY)
     PWM_RIGHT.ChangeDutyCycle(0)
 def turn_right():
+    global T
     global LAST_DUTY
     global MAX_PWM_DUTY
     LAST_DUTY += DUTY_STEPPING_SPEED
     if LAST_DUTY > MAX_PWM_DUTY:
         LAST_DUTY = MAX_PWM_DUTY
+    DUTY = 1 - (1/(1+0.011*math.exp(T)))
+    T += 1
+    PWM_LEFT.ChangeDutyCycle(DUTY)
     PWM_LEFT.ChangeDutyCycle(0)
-    PWM_RIGHT.ChangeDutyCycle(LAST_DUTY)
+    PWM_RIGHT.ChangeDutyCycle(DUTY)
 
 # -----------------------------------------------------------------------------------------------
 # User-defined class to be used in the callback function
