@@ -21,7 +21,7 @@ PIN_LEFT = 16
 PIN_RIGHT = 13
 PWM_FREQ = 200
 PWM_DUTY = 10
-MAX_PWM_DUTY = 100
+MAX_PWM_DUTY = 30
 DUTY_STEPPING_SPEED = 1
 DETECTION_MARGIN = 30
 PREVIOUS_ID = -1
@@ -46,7 +46,7 @@ def turn_left(distance):
     LAST_DUTY += DUTY_STEPPING_SPEED
     if LAST_DUTY > MAX_PWM_DUTY:
         LAST_DUTY = MAX_PWM_DUTY
-    PWM_LEFT.ChangeDutyCycle((1-distance) * LAST_DUTY)
+    PWM_LEFT.ChangeDutyCycle((1-distance) * MAX_PWM_DUTY)
     PWM_RIGHT.ChangeDutyCycle(0)
 def turn_right(distance):
     global LAST_DUTY
@@ -55,7 +55,7 @@ def turn_right(distance):
     if LAST_DUTY > MAX_PWM_DUTY:
         LAST_DUTY = MAX_PWM_DUTY
     PWM_LEFT.ChangeDutyCycle(0)
-    PWM_RIGHT.ChangeDutyCycle((1-distance) * LAST_DUTY)
+    PWM_RIGHT.ChangeDutyCycle((1-distance) * MAX_PWM_DUTY)
 
 # -----------------------------------------------------------------------------------------------
 # User-defined class to be used in the callback function
