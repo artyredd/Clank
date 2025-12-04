@@ -21,6 +21,7 @@ PIN_LEFT = 16
 PIN_RIGHT = 13
 PWM_FREQ = 200
 PWM_DUTY = 10
+MAX_PWM_DUTY = 20
 DETECTION_MARGIN = 45
 PREVIOUS_ID = -1
 CURRENT_ID = -1
@@ -40,12 +41,18 @@ def stop_motor():
 
 def turn_left():
     global LAST_DUTY
+    global MAX_PWM_DUTY
     LAST_DUTY += 1
+    if LAST_DUTY > MAX_PWM_DUTY:
+        LAST_DUTY = MAX_PWM_DUTY
     PWM_LEFT.ChangeDutyCycle(LAST_DUTY)
     PWM_RIGHT.ChangeDutyCycle(0)
 def turn_right():
     global LAST_DUTY
+    global MAX_PWM_DUTY
     LAST_DUTY += 1
+    if LAST_DUTY > MAX_PWM_DUTY:
+        LAST_DUTY = MAX_PWM_DUTY
     PWM_LEFT.ChangeDutyCycle(0)
     PWM_RIGHT.ChangeDutyCycle(LAST_DUTY)
 
