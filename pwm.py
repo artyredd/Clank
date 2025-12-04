@@ -34,7 +34,6 @@ for freq in range(50,1000, 50):
     print(f"[", end='', flush=True)
     for dc in range(0, 101, 1):
         print(".", end='', flush=True)
-        p
         pwmLeft.ChangeDutyCycle(dc)
         #pwmRight.ChangeDutyCycle(dc)
         time.sleep(.1)
