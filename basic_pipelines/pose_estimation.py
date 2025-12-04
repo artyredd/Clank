@@ -9,6 +9,7 @@ import hailo
 
 from hailo_apps.hailo_app_python.core.common.buffer_utils import get_caps_from_pad, get_numpy_from_buffer
 from hailo_apps.hailo_app_python.core.gstreamer.gstreamer_app import app_callback_class
+from hailo_apps.hailo_app_python.core.gstreamer.gstreamer_helper_pipelines import SOURCE_PIPELINE
 from hailo_apps.hailo_app_python.apps.pose_estimation.pose_estimation_pipeline import GStreamerPoseEstimationApp
 from hailo_apps.hailo_app_python.core.common.core import get_default_parser
 
@@ -36,6 +37,15 @@ PWM_LEFT = None
 class user_app_callback_class(app_callback_class):
     def __init__(self):
         super().__init__()
+
+class MyGstreamer(GStreamerPoseEstimationApp):
+    def __init__(self):
+        super().__init__()
+    def get_pipeline_string(self):
+        width = 640
+        height = 480
+        framerate = 60
+        return f"appsrc name=app_source is-live=true leaky-type=downstream max-buffers=3 ! videoflip name=videoflip video-direction=horiz ! video/x-raw, format=RGB, width={width}, height={height} !  queue name=source_scale_q leaky=no max-size-buffers=3 max-size-bytes=0 max-size-time=0  ! videoscale name=source_videoscale n-threads=2 ! queue name=source_convert_q leaky=no max-size-buffers=3 max-size-bytes=0 max-size-time=0  ! videoconvert n-threads=3 name=source_convert qos=false ! video/x-raw, pixel-aspect-ratio=1/1, format=RGB, width={width}, height={height} ! videorate name=source_videorate ! capsfilter name=source_fps_caps caps=\"video/x-raw, framerate={framerate}/1\"  ! queue name=inference_wrapper_input_q leaky=no max-size-buffers=3 max-size-bytes=0 max-size-time=0  ! hailocropper name=inference_wrapper_crop so-path=/usr/lib/aarch64-linux-gnu/hailo/tappas/post_processes/cropping_algorithms/libwhole_buffer.so function-name=create_crops use-letterbox=true resize-method=inter-area internal-offset=true hailoaggregator name=inference_wrapper_agg inference_wrapper_crop. ! queue name=inference_wrapper_bypass_q leaky=no max-size-buffers=20 max-size-bytes=0 max-size-time=0  ! inference_wrapper_agg.sink_0 inference_wrapper_crop. ! queue name=inference_scale_q leaky=no max-size-buffers=3 max-size-bytes=0 max-size-time=0  ! videoscale name=inference_videoscale n-threads=2 qos=false ! queue name=inference_convert_q leaky=no max-size-buffers=3 max-size-bytes=0 max-size-time=0  ! video/x-raw, pixel-aspect-ratio=1/1 ! videoconvert name=inference_videoconvert n-threads=2 ! queue name=inference_hailonet_q leaky=no max-size-buffers=3 max-size-bytes=0 max-size-time=0  ! hailonet name=inference_hailonet hef-path=/usr/local/hailo/resources/models/hailo8l/yolov8s_pose.hef batch-size=2  vdevice-group-id=1  force-writable=true  ! queue name=inference_hailofilter_q leaky=no max-size-buffers=3 max-size-bytes=0 max-size-time=0  ! hailofilter name=inference_hailofilter so-path=/usr/local/hailo/resources/so/libyolov8pose_postprocess.so   function-name=filter_letterbox  qos=false ! queue name=inference_output_q leaky=no max-size-buffers=3 max-size-bytes=0 max-size-time=0   ! inference_wrapper_agg.sink_1 inference_wrapper_agg. ! queue name=inference_wrapper_output_q leaky=no max-size-buffers=3 max-size-bytes=0 max-size-time=0   ! hailotracker name=hailo_tracker class-id=0 kalman-dist-thr=0.8 iou-thr=0.9 init-iou-thr=0.7 keep-new-frames=2 keep-tracked-frames=15 keep-lost-frames=2 keep-past-metadata=False qos=False ! queue name=hailo_tracker_q leaky=no max-size-buffers=3 max-size-bytes=0 max-size-time=0   ! queue name=identity_callback_q leaky=no max-size-buffers=3 max-size-bytes=0 max-size-time=0  ! identity name=identity_callback  ! queue name=hailo_display_overlay_q leaky=no max-size-buffers=3 max-size-bytes=0 max-size-time=0  ! hailooverlay name=hailo_display_overlay  ! queue name=hailo_display_videoconvert_q leaky=no max-size-buffers=3 max-size-bytes=0 max-size-time=0  ! videoconvert name=hailo_display_videoconvert n-threads=2 qos=false ! queue name=hailo_display_q leaky=no max-size-buffers=3 max-size-bytes=0 max-size-time=0  ! fpsdisplaysink name=hailo_display video-sink=autovideosink sync=false text-overlay=True signal-fps-measurements=true"
         
 # -----------------------------------------------------------------------------------------------
 # User-defined callback function
@@ -221,8 +231,6 @@ if __name__ == "__main__":
         os.environ["HAILO_ENV_FILE"] = env_path_str
         # Create an instance of the user app callback class
         user_data = user_app_callback_class()
-        user_data.video_width = 640
-        user_data.video_height = 480
         
         app = GStreamerPoseEstimationApp(app_callback, user_data)
         app.run()
