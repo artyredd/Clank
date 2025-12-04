@@ -32,7 +32,17 @@ ID_IN_LIST = False
 PWM_RIGHT = None
 PWM_LEFT = None
 
-LAST_DUTY = 10
+LAST_DUTY = 0
+
+def getDuty():
+    global LAST_DUTY
+    global PWM_DUTY
+    global MAX_PWM_DUTY
+    value = (1/22) * (LAST_DUTY<<1) + PWM_DUTY
+    if value > MAX_PWM_DUTY:
+        value = MAX_PWM_DUTY
+    LAST_DUTY = LAST_DUTY + 1
+    return value
 
 def stop_motor():
     global LAST_DUTY
@@ -41,21 +51,11 @@ def stop_motor():
     LAST_DUTY = PWM_DUTY
 
 def turn_left():
-    global LAST_DUTY
-    global MAX_PWM_DUTY
-    LAST_DUTY += DUTY_STEPPING_SPEED
-    if LAST_DUTY > MAX_PWM_DUTY:
-        LAST_DUTY = MAX_PWM_DUTY
-    PWM_LEFT.ChangeDutyCycle(LAST_DUTY)
+    PWM_LEFT.ChangeDutyCycle(getDuty())
     PWM_RIGHT.ChangeDutyCycle(0)
 def turn_right():
-    global LAST_DUTY
-    global MAX_PWM_DUTY
-    LAST_DUTY += DUTY_STEPPING_SPEED
-    if LAST_DUTY > MAX_PWM_DUTY:
-        LAST_DUTY = MAX_PWM_DUTY
     PWM_LEFT.ChangeDutyCycle(0)
-    PWM_RIGHT.ChangeDutyCycle(LAST_DUTY)
+    PWM_RIGHT.ChangeDutyCycle(getDuty())
 
 # -----------------------------------------------------------------------------------------------
 # User-defined class to be used in the callback function
