@@ -22,8 +22,8 @@ PIN_RIGHT = 13
 PWM_FREQ = 200
 PWM_DUTY = 2
 MAX_PWM_DUTY = 100
-DUTY_STEPPING_SPEED = 0.25
-DETECTION_MARGIN = 25
+DUTY_STEPPING_SPEED = 0.3
+DETECTION_MARGIN = 30
 PREVIOUS_ID = -1
 CURRENT_ID = -1
 TIME_AT_LAST_ID_CHANGE = 0
@@ -31,19 +31,8 @@ MAX_TIME_PER_ID = 10
 ID_IN_LIST = False
 PWM_RIGHT = None
 PWM_LEFT = None
-PICKUP_SPEED = 10
 
-LAST_DUTY = 0
-
-def getDuty():
-    global LAST_DUTY
-    global PWM_DUTY
-    global MAX_PWM_DUTY
-    value = (1/PICKUP_SPEED) * (LAST_DUTY<<1) + PWM_DUTY
-    if value > MAX_PWM_DUTY:
-        value = MAX_PWM_DUTY
-    LAST_DUTY = LAST_DUTY + 1
-    return value
+LAST_DUTY = 10
 
 def stop_motor():
     global LAST_DUTY
@@ -52,11 +41,21 @@ def stop_motor():
     LAST_DUTY = PWM_DUTY
 
 def turn_left():
-    PWM_LEFT.ChangeDutyCycle(getDuty())
+    global LAST_DUTY
+    global MAX_PWM_DUTY
+    LAST_DUTY += DUTY_STEPPING_SPEED
+    if LAST_DUTY > MAX_PWM_DUTY:
+        LAST_DUTY = MAX_PWM_DUTY
+    PWM_LEFT.ChangeDutyCycle(LAST_DUTY)
     PWM_RIGHT.ChangeDutyCycle(0)
 def turn_right():
+    global LAST_DUTY
+    global MAX_PWM_DUTY
+    LAST_DUTY += DUTY_STEPPING_SPEED
+    if LAST_DUTY > MAX_PWM_DUTY:
+        LAST_DUTY = MAX_PWM_DUTY
     PWM_LEFT.ChangeDutyCycle(0)
-    PWM_RIGHT.ChangeDutyCycle(getDuty())
+    PWM_RIGHT.ChangeDutyCycle(LAST_DUTY)
 
 # -----------------------------------------------------------------------------------------------
 # User-defined class to be used in the callback function
