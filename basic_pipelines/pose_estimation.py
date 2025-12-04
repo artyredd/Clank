@@ -24,11 +24,27 @@ PWM_DUTY = 10
 DETECTION_MARGIN = 45
 PREVIOUS_ID = -1
 CURRENT_ID = -1
-TIME_AT_LAST_ID_CHANGE = -30
-MAX_TIME_PER_ID = 15
+TIME_AT_LAST_ID_CHANGE = 0
+MAX_TIME_PER_ID = 10
 ID_IN_LIST = False
 PWM_RIGHT = None
 PWM_LEFT = None
+
+LAST_DUTY = PWM_DUTY
+
+def stop_motor():
+    PWM_LEFT.ChangeDutyCycle(0)
+    PWM_RIGHT.ChangeDutyCycle(0)
+    LAST_DUTY = PWM_DUTY
+
+def turn_left():
+    LAST_DUTY += 1
+    PWM_LEFT.ChangeDutyCycle(PWM_DUTY)
+    PWM_RIGHT.ChangeDutyCycle(LAST_DUTY)
+def turn_right():
+    LAST_DUTY += 1
+    PWM_LEFT.ChangeDutyCycle(0)
+    PWM_RIGHT.ChangeDutyCycle(LAST_DUTY)
 
 # -----------------------------------------------------------------------------------------------
 # User-defined class to be used in the callback function
@@ -55,16 +71,6 @@ class MyGstreamer(GStreamerPoseEstimationApp):
 # -----------------------------------------------------------------------------------------------
 # User-defined callback function
 # -----------------------------------------------------------------------------------------------
-
-def stop_motor():
-    PWM_LEFT.ChangeDutyCycle(0)
-    PWM_RIGHT.ChangeDutyCycle(0)
-def turn_left():
-    PWM_LEFT.ChangeDutyCycle(PWM_DUTY)
-    PWM_RIGHT.ChangeDutyCycle(0)
-def turn_right():
-    PWM_LEFT.ChangeDutyCycle(0)
-    PWM_RIGHT.ChangeDutyCycle(PWM_DUTY)
 
 # This is the callback function that will be called when data is available from the pipeline
 def app_callback(pad, info, user_data):
