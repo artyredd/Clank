@@ -31,6 +31,7 @@ MAX_TIME_PER_ID = 10
 ID_IN_LIST = False
 PWM_RIGHT = None
 PWM_LEFT = None
+PICKUP_SPEED = 10
 
 LAST_DUTY = 0
 
@@ -38,7 +39,7 @@ def getDuty():
     global LAST_DUTY
     global PWM_DUTY
     global MAX_PWM_DUTY
-    value = (1/22) * (LAST_DUTY<<1) + PWM_DUTY
+    value = (1/PICKUP_SPEED) * (LAST_DUTY<<1) + PWM_DUTY
     if value > MAX_PWM_DUTY:
         value = MAX_PWM_DUTY
     LAST_DUTY = LAST_DUTY + 1
