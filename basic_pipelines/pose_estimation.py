@@ -10,6 +10,7 @@ import hailo
 from hailo_apps.hailo_app_python.core.common.buffer_utils import get_caps_from_pad, get_numpy_from_buffer
 from hailo_apps.hailo_app_python.core.gstreamer.gstreamer_app import app_callback_class
 from hailo_apps.hailo_app_python.apps.pose_estimation.pose_estimation_pipeline import GStreamerPoseEstimationApp
+from hailo_apps.hailo_app_python.core.common.core import get_default_parser
 
 import RPi.GPIO as GPIO
 from threading import Thread, Lock, Condition
@@ -208,6 +209,12 @@ if __name__ == "__main__":
         PWM_LEFT.start(0)
         PWM_RIGHT.start(0)
 
+        # Create parser with default options
+        parser = get_default_parser()
+
+        # Set default frame rate for better performance
+        parser.set_defaults(frame_rate=60)
+
         project_root = Path(__file__).resolve().parent.parent
         env_file     = project_root / ".env"
         env_path_str = str(env_file)
@@ -216,6 +223,8 @@ if __name__ == "__main__":
         user_data = user_app_callback_class()
         
         app = GStreamerPoseEstimationApp(app_callback, user_data)
+        app.video_width = 640
+        app.video_height = 480
         app.run()
     except KeyboardInterrupt:
         stop_motor()
