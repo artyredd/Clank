@@ -16,13 +16,17 @@ from threading import Thread, Lock, Condition
 import time
 
 PIN_LEFT = 16
-PIN_RIGHT = 23
+PIN_RIGHT = 13
+PWM_FREQ = 200
+PWM_DUTY = 50
 DETECTION_MARGIN = 150
 PREVIOUS_ID = -1
 CURRENT_ID = -1
 TIME_AT_LAST_ID_CHANGE = -30
 MAX_TIME_PER_ID = 15
 ID_IN_LIST = False
+PWM_RIGHT = None
+PWM_LEFT = None
 
 # -----------------------------------------------------------------------------------------------
 # User-defined class to be used in the callback function
@@ -37,14 +41,14 @@ class user_app_callback_class(app_callback_class):
 # -----------------------------------------------------------------------------------------------
 
 def stop_motor():
-    GPIO.output(PIN_LEFT, GPIO.LOW)
-    GPIO.output(PIN_RIGHT, GPIO.LOW)
+    PWM_LEFT.ChangeDutyCycle(0)
+    PWM_RIGHT.ChangeDutyCycle(0)
 def turn_left():
-    GPIO.output(PIN_LEFT, GPIO.HIGH)
-    GPIO.output(PIN_RIGHT, GPIO.LOW)
+    PWM_LEFT.ChangeDutyCycle(PWM_DUTY)
+    PWM_RIGHT.ChangeDutyCycle(0)
 def turn_right():
-    GPIO.output(PIN_LEFT, GPIO.LOW)
-    GPIO.output(PIN_RIGHT, GPIO.HIGH)
+    PWM_LEFT.ChangeDutyCycle(0)
+    PWM_RIGHT.ChangeDutyCycle(PWM_DUTY)
 
 # This is the callback function that will be called when data is available from the pipeline
 def app_callback(pad, info, user_data):
@@ -197,6 +201,13 @@ if __name__ == "__main__":
 
         GPIO.output(PIN_LEFT, GPIO.LOW)
         GPIO.output(PIN_RIGHT, GPIO.LOW)
+
+        
+        PWM_LEFT = GPIO.PWM(PIN_LEFT, PWM_FREQ)
+        PWM_RIGHT = GPIO.PWM(PIN_RIGHT, PWM_FREQ)
+        PWM_LEFT.start(0)
+        PWM_RIGHT.start(0)
+
         project_root = Path(__file__).resolve().parent.parent
         env_file     = project_root / ".env"
         env_path_str = str(env_file)
