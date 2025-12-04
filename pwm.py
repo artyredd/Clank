@@ -27,12 +27,12 @@ pwmRight = GPIO.PWM(GPIO_RIGHT, 1000)
 pwmLeft.start(0)
 #pwmRight.start(0)
 
-for dc in range(0, 1001, 1):
+for dc in range(0, 101, 1):
     pwmLeft.ChangeDutyCycle(dc)
     #pwmRight.ChangeDutyCycle(dc)
     time.sleep(.1)
 
-for dc in range(1000, -1, -1):
+for dc in range(100, -1, -1):
     pwmLeft.ChangeDutyCycle(dc)
     #pwmRight.ChangeDutyCycle(dc)
     time.sleep(.1)
