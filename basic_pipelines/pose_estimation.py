@@ -41,8 +41,8 @@ def stop_motor():
 def turn_left():
     global LAST_DUTY
     LAST_DUTY += 1
-    PWM_LEFT.ChangeDutyCycle(PWM_DUTY)
-    PWM_RIGHT.ChangeDutyCycle(LAST_DUTY)
+    PWM_LEFT.ChangeDutyCycle(LAST_DUTY)
+    PWM_RIGHT.ChangeDutyCycle(0)
 def turn_right():
     global LAST_DUTY
     LAST_DUTY += 1
