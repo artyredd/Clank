@@ -17,7 +17,7 @@ import RPi.GPIO as GPIO
 from threading import Thread, Lock, Condition
 import time
 
-PIN_LEFT = 12
+PIN_LEFT = 19
 PIN_RIGHT = 13
 PWM_FREQ = 200
 MAX_PWM_DUTY = 30
