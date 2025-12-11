@@ -129,7 +129,7 @@ def app_callback(pad, info, user_data):
                 track_id = track[0].get_id()
                 # initialize if we haven't had a value yet
                 if CURRENT_ID == -1 or ID_IN_LIST == False:
-                    string_to_print += (f"Defaulting tracking to first object found\n")
+                    print(f"Defaulting tracking to first object found\n")
                     CURRENT_ID = track_id
                     TIME_AT_LAST_ID_CHANGE = time.time()
                 # check to see if the tracked object is still in the array
@@ -137,7 +137,7 @@ def app_callback(pad, info, user_data):
                     idFound = True
                 # check to see if we should look at someone else
                 if track_id != CURRENT_ID and timeSinceLastIdChange >= MAX_TIME_PER_ID:
-                    string_to_print += (f"Looked too long at {CURRENT_ID} looking at {track_id} instead\n")
+                    print(f"Looked too long at {CURRENT_ID} looking at {track_id} instead\n")
                     CURRENT_ID = track_id
                     TIME_AT_LAST_ID_CHANGE = time.time()
                     
@@ -182,7 +182,7 @@ def app_callback(pad, info, user_data):
         #frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
         user_data.set_frame(frame)
 
-    print(string_to_print)
+    #print(string_to_print)
     return Gst.PadProbeReturn.OK
 
 # This function can be used to get the COCO keypoints coorespondence map
