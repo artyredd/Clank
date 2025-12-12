@@ -33,12 +33,16 @@ PWM_LEFT = None
 def stop_motor():
     PWM_LEFT.ChangeDutyCycle(0)
     PWM_RIGHT.ChangeDutyCycle(0)
+    GPIO.output(PIN_LEFT, GPIO.HIGH)
+    GPIO.output(PIN_RIGHT, GPIO.HIGH)
 
 def turn_left(distance):
     PWM_LEFT.ChangeDutyCycle((1-distance) * MAX_PWM_DUTY)
     PWM_RIGHT.ChangeDutyCycle(0)
+    GPIO.output(PIN_RIGHT, GPIO.HIGH)
 def turn_right(distance):
     PWM_LEFT.ChangeDutyCycle(0)
+    GPIO.output(PIN_LEFT, GPIO.HIGH)
     PWM_RIGHT.ChangeDutyCycle((1-distance) * MAX_PWM_DUTY)
 
 # -----------------------------------------------------------------------------------------------
@@ -127,7 +131,7 @@ def app_callback(pad, info, user_data):
             track = detection.get_objects_typed(hailo.HAILO_UNIQUE_ID)
             if len(track) == 1:
                 track_id = track[0].get_id()
-                
+
             # initialize if we haven't had a value yet
             if CURRENT_ID == -1 or ID_IN_LIST == False:
                 print(f"Defaulting tracking to first object found\n")
