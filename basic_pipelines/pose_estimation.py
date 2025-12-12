@@ -160,8 +160,8 @@ def app_callback(pad, info, user_data):
                 leftY = int((leftShoulderPoint.y() * bbox.height() + bbox.ymin()) * height)
                 rightX = int((rightShoulderPoint.x() * bbox.width() + bbox.xmin()) * width)
                 rightY = int((rightShoulderPoint.y() * bbox.height() + bbox.ymin()) * height)
-                centerX = int((leftX+rightX)/2)
-                centerY = int((leftY+rightY)/2)
+                centerX = points[keypoints["nose"]].x()
+                centerY = points[keypoints["nose"]].y()
                 string_to_print += f"Center: x: {centerX:.2f} y: {centerY:.2f}\n"
                 #cv2.circle(frame, (centerX, centerY), 5, (0, 255, 0), -1)
                 global DETECTION_MARGIN
