@@ -35,11 +35,11 @@ def stop_motor():
     PWM_RIGHT.ChangeDutyCycle(100)
 
 def turn_left(distance):
-    PWM_LEFT.ChangeDutyCycle((1-distance) * MAX_PWM_DUTY)
+    PWM_LEFT.ChangeDutyCycle(100 - ((1-distance) * MAX_PWM_DUTY))
     PWM_RIGHT.ChangeDutyCycle(100)
 def turn_right(distance):
     PWM_LEFT.ChangeDutyCycle(100)
-    PWM_RIGHT.ChangeDutyCycle((1-distance) * MAX_PWM_DUTY)
+    PWM_RIGHT.ChangeDutyCycle(100 - ((1-distance) * MAX_PWM_DUTY))
 
 # -----------------------------------------------------------------------------------------------
 # User-defined class to be used in the callback function
