@@ -31,18 +31,14 @@ PWM_RIGHT = None
 PWM_LEFT = None
 
 def stop_motor():
-    PWM_LEFT.ChangeDutyCycle(0)
-    PWM_RIGHT.ChangeDutyCycle(0)
-    GPIO.output(PIN_LEFT, GPIO.HIGH)
-    GPIO.output(PIN_RIGHT, GPIO.HIGH)
+    PWM_LEFT.ChangeDutyCycle(100)
+    PWM_RIGHT.ChangeDutyCycle(100)
 
 def turn_left(distance):
     PWM_LEFT.ChangeDutyCycle((1-distance) * MAX_PWM_DUTY)
-    PWM_RIGHT.ChangeDutyCycle(0)
-    GPIO.output(PIN_RIGHT, GPIO.HIGH)
+    PWM_RIGHT.ChangeDutyCycle(100)
 def turn_right(distance):
-    PWM_LEFT.ChangeDutyCycle(0)
-    GPIO.output(PIN_LEFT, GPIO.HIGH)
+    PWM_LEFT.ChangeDutyCycle(100)
     PWM_RIGHT.ChangeDutyCycle((1-distance) * MAX_PWM_DUTY)
 
 # -----------------------------------------------------------------------------------------------
