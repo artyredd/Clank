@@ -168,10 +168,10 @@ def app_callback(pad, info, user_data):
                 global DETECTION_MARGIN
                 centerScreen = int(width/2)
                 if centerX < (centerScreen - DETECTION_MARGIN):
-                    turn_left((1.0 * centerX)/(1.0* centerScreen)))
+                    turn_left(centerX/centerScreen)
                     string_to_print += "Left\n"
                 elif centerX > (centerScreen + DETECTION_MARGIN):
-                    turn_right(2-((1.0 * centerX)/(1.0 * centerScreen)))
+                    turn_right(2-(centerX/centerScreen))
                     string_to_print += "Right\n"
                 else:
                     stop_motor()
