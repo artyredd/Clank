@@ -17,8 +17,10 @@ import RPi.GPIO as GPIO
 from threading import Thread, Lock, Condition
 import time
 
-PIN_LEFT = 13
-PIN_RIGHT = 19
+PIN_RED_LED = 9
+PIN_GREEN_LED = 11
+PIN_LEFT = 19
+PIN_RIGHT = 13
 PWM_FREQ = 200
 MAX_PWM_DUTY = 30
 DETECTION_MARGIN = 10
@@ -130,7 +132,7 @@ def app_callback(pad, info, user_data):
 
             # initialize if we haven't had a value yet
             if CURRENT_ID == -1 or ID_IN_LIST == False:
-                print(f"Defaulting tracking to first object found\n")
+                #print(f"Defaulting tracking to first object found\n")
                 CURRENT_ID = track_id
                 TIME_AT_LAST_ID_CHANGE = time.time()
             # check to see if the tracked object is still in the array
@@ -138,7 +140,7 @@ def app_callback(pad, info, user_data):
                 idFound = True
             # check to see if we should look at someone else
             if track_id != CURRENT_ID and timeSinceLastIdChange >= MAX_TIME_PER_ID:
-                print(f"Looked too long at {CURRENT_ID} looking at {track_id} instead\n")
+                #print(f"Looked too long at {CURRENT_ID} looking at {track_id} instead\n")
                 CURRENT_ID = track_id
                 TIME_AT_LAST_ID_CHANGE = time.time()
                     
@@ -216,9 +218,14 @@ if __name__ == "__main__":
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(PIN_LEFT, GPIO.OUT)
         GPIO.setup(PIN_RIGHT, GPIO.OUT)
+        GPIO.setup(PIN_GREEN_LED, GPIO.OUT)
+        GPIO.setup(PIN_RED_LED, GPIO.OUT)
 
         GPIO.output(PIN_LEFT, GPIO.LOW)
         GPIO.output(PIN_RIGHT, GPIO.LOW)
+        GPIO.output(PIN_GREEN_LED, GPIO.HIGH)
+        GPIO.output(PIN_RED_LED, GPIO.LOW)
+
 
         
         PWM_LEFT = GPIO.PWM(PIN_LEFT, PWM_FREQ)
