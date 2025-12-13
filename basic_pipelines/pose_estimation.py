@@ -129,20 +129,19 @@ def app_callback(pad, info, user_data):
             track = detection.get_objects_typed(hailo.HAILO_UNIQUE_ID)
             if len(track) == 1:
                 track_id = track[0].get_id()
-
-            # initialize if we haven't had a value yet
-            if CURRENT_ID == -1 or ID_IN_LIST == False:
-                #print(f"Defaulting tracking to first object found\n")
-                CURRENT_ID = track_id
-                TIME_AT_LAST_ID_CHANGE = time.time()
-            # check to see if the tracked object is still in the array
-            if track_id == CURRENT_ID:
-                idFound = True
-            # check to see if we should look at someone else
-            if track_id != CURRENT_ID and timeSinceLastIdChange >= MAX_TIME_PER_ID:
-                #print(f"Looked too long at {CURRENT_ID} looking at {track_id} instead\n")
-                CURRENT_ID = track_id
-                TIME_AT_LAST_ID_CHANGE = time.time()
+                # initialize if we haven't had a value yet
+                if CURRENT_ID == -1 or ID_IN_LIST == False:
+                    #print(f"Defaulting tracking to first object found\n")
+                    CURRENT_ID = track_id
+                    TIME_AT_LAST_ID_CHANGE = time.time()
+                # check to see if the tracked object is still in the array
+                if track_id == CURRENT_ID:
+                    idFound = True
+                # check to see if we should look at someone else
+                if track_id != CURRENT_ID and timeSinceLastIdChange >= MAX_TIME_PER_ID:
+                    #print(f"Looked too long at {CURRENT_ID} looking at {track_id} instead\n")
+                    CURRENT_ID = track_id
+                    TIME_AT_LAST_ID_CHANGE = time.time()
                     
 
             string_to_print += (f"Detection: ID: {track_id} Label: {label} Confidence: {confidence:.2f}\n")
