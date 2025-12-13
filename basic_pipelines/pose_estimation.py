@@ -17,8 +17,8 @@ import RPi.GPIO as GPIO
 from threading import Thread, Lock, Condition
 import time
 
-PIN_RED_LED = 9
-PIN_GREEN_LED = 11
+PIN_RED_LED = 11
+PIN_GREEN_LED = 9
 PIN_LEFT = 19
 PIN_RIGHT = 13
 PWM_FREQ = 200
