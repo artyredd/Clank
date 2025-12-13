@@ -51,3 +51,5 @@ cd ~
 sudo nano /etc/xdg/labwc/autostart
 
 #reboot
+
+#(git add . && git commit -m"PC->RPI" && git push) | (ssh arty@192.168.0.154 "cd /home/arty/Clank && git pull && sudo reboot")
